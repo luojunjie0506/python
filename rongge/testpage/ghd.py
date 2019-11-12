@@ -109,8 +109,9 @@ class TestGhd(MyunitTest):
         fk = self.driver.find_element_by_xpath('/html/body/div[3]/form/div[3]/button[2]')
         self.driver.execute_script('arguments[0].click();',fk)
         self.driver.find_element_by_id('NewcardNo').send_keys('asdasd')
-        self.driver.find_element_by_id('NewcardNo').click()
-        self.driver.find_element_by_xpath('/html/body/div[3]/form/div[4]/div[2]/table/tbody/tr[1]/td[1]').click()
+        ele = self.driver.find_element_by_xpath('/html/body/div[3]/form/div[4]/div[2]/table/tbody/tr[1]/td[1]')
+        ActionChains(self.driver).move_to_element_with_offset(ele, 21, 0).perform()
+        time.sleep(1)
         text = WebDriverWait(self.driver, 5, 0.2).until(lambda x: x.find_element_by_xpath(
             '/html/body/div[3]/form/div[4]/div[2]/table/tbody/tr[3]/td/span/font')).text
         self.assertEqual(text,'专卖店不存在或错误')
@@ -124,8 +125,9 @@ class TestGhd(MyunitTest):
         fk = self.driver.find_element_by_xpath('/html/body/div[3]/form/div[3]/button[2]')
         self.driver.execute_script('arguments[0].click();',fk)
         self.driver.find_element_by_id('NewcardNo').send_keys('GD5555')
-        self.driver.find_element_by_id('NewcardNo').click()
-        self.driver.find_element_by_xpath('/html/body/div[3]/form/div[4]/div[2]/table/tbody/tr[1]/td[1]').click()
+        ele = self.driver.find_element_by_xpath('/html/body/div[3]/form/div[4]/div[2]/table/tbody/tr[1]/td[1]')
+        ActionChains(self.driver).move_to_element_with_offset(ele, 21, 0).perform()
+        time.sleep(1)
         text = WebDriverWait(self.driver,5,0.2).until(lambda x:x.find_element_by_xpath('/html/body/div[3]/form/div[4]/div[2]/table/tbody/tr[3]/td/span/font')).text
         self.assertEqual(text,'不是正常状态的专卖店')
 

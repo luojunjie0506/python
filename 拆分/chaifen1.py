@@ -2,6 +2,7 @@ from openpyxl import load_workbook
 from openpyxl import Workbook
 from openpyxl.styles import Border,Side,Alignment
 
+545
 #写入方法
 def cx(a,qq):
     # 新建一个excel文件

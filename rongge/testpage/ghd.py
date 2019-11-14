@@ -31,10 +31,10 @@ class TestGhd(MyunitTest):
     #搜索框功能
     def test32(self):
         self.shop()
-        self.driver.find_element_by_id('findtxt').send_keys('K-C007')
+        self.driver.find_element_by_id('findtxt').send_keys('K-W002')
         self.driver.find_element_by_id('findBtn').click()
         time.sleep(1)
-        text1 = self.driver.find_element_by_id('orderQty_K-C007').get_attribute('style')
+        text1 = self.driver.find_element_by_id('orderQty_K-W002').get_attribute('style')
         self.assertIn('background',text1)
 
     #不选择商品直接下单
@@ -103,6 +103,7 @@ class TestGhd(MyunitTest):
 
     #找他人支付错误店号
     def test38(self):
+        self.driver.switch_to.window(self.driver.window_handles[0])
         self.shop()
         #新建鼠标对象
         mouse = PyMouse()
@@ -144,9 +145,10 @@ class TestGhd(MyunitTest):
         self.driver.find_element_by_id('module_poOrderSale1').click()
         self.driver.find_element_by_id('orderQty_M048').send_keys('5')
         self.driver.find_element_by_id('orderQty_M049').send_keys('5')
-        self.driver.find_element_by_xpath('/html/body/div[3]/form/div[3]/button[2]').click()
+        fk = self.driver.find_element_by_xpath('/html/body/div[3]/form/div[3]/button[2]')
+        self.driver.execute_script('arguments[0].click();',fk)
         self.driver.find_element_by_id('NewcardNo').send_keys('AH5012')
-        self.driver.find_element_by_id('orderQty_ZL112').click()
+        self.driver.find_element_by_id('butSave').click()
         time.sleep(2)
         self.driver.switch_to.window(self.driver.window_handles[1])
         time.sleep(2)

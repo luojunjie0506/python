@@ -4,7 +4,7 @@ import time
 from rongge.testpage.models.myunit import MyunitTest
 from rongge.tool.tool import yzm
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.common.action_chains import ActionChains
+from pymouse import PyMouse
 
 
 class TestGhd(MyunitTest):
@@ -26,6 +26,7 @@ class TestGhd(MyunitTest):
 
     def shop(self):
         self.driver.find_element_by_xpath('/html/body/div[1]/div[2]/div/div/ul/li[3]/a').click()
+
 
     #搜索框功能
     def test32(self):
@@ -103,14 +104,16 @@ class TestGhd(MyunitTest):
     #找他人支付错误店号
     def test38(self):
         self.shop()
+        mouse = PyMouse()
         self.driver.find_element_by_id('module_poOrderSale1').click()
         WebDriverWait(self.driver, 5, 0.2).until(lambda x: x.find_element_by_id('orderQty_K-W001')).send_keys('5')
         self.driver.find_element_by_id('orderQty_K-W002').send_keys('5')
         fk = self.driver.find_element_by_xpath('/html/body/div[3]/form/div[3]/button[2]')
         self.driver.execute_script('arguments[0].click();',fk)
         self.driver.find_element_by_id('NewcardNo').send_keys('asdasd')
-        ele = self.driver.find_element_by_xpath('/html/body/div[3]/form/div[4]/div[2]/table/tbody/tr[1]/td[1]')
-        ActionChains(self.driver).move_to_element_with_offset(ele, 21, 0).perform()
+        mouse.move(670, 437)
+        time.sleep(1)
+        mouse.move(500, 500)
         time.sleep(1)
         text = WebDriverWait(self.driver, 5, 0.2).until(lambda x: x.find_element_by_xpath(
             '/html/body/div[3]/form/div[4]/div[2]/table/tbody/tr[3]/td/span/font')).text
@@ -119,14 +122,16 @@ class TestGhd(MyunitTest):
     #找他人支付非正常状态店号
     def test39(self):
         self.shop()
+        mouse = PyMouse()
         self.driver.find_element_by_id('module_poOrderSale1').click()
         WebDriverWait(self.driver,5,0.2).until(lambda x:x.find_element_by_id('orderQty_K-W001')).send_keys('5')
         self.driver.find_element_by_id('orderQty_K-W002').send_keys('5')
         fk = self.driver.find_element_by_xpath('/html/body/div[3]/form/div[3]/button[2]')
         self.driver.execute_script('arguments[0].click();',fk)
         self.driver.find_element_by_id('NewcardNo').send_keys('GD5555')
-        ele = self.driver.find_element_by_xpath('/html/body/div[3]/form/div[4]/div[2]/table/tbody/tr[1]/td[1]')
-        ActionChains(self.driver).move_to_element_with_offset(ele, 21, 0).perform()
+        mouse.move(670, 437)
+        time.sleep(1)
+        mouse.move(500, 500)
         time.sleep(1)
         text = WebDriverWait(self.driver,5,0.2).until(lambda x:x.find_element_by_xpath('/html/body/div[3]/form/div[4]/div[2]/table/tbody/tr[3]/td/span/font')).text
         self.assertEqual(text,'不是正常状态的专卖店')

@@ -81,15 +81,12 @@ if __name__ =='__main__':
     suite_tc.load_ghd('test35')
     suite_tc.load_ghd('test36')
     suite_tc.load_ghd('test37')
+    suite_tc.load_ghd('test38')
+    suite_tc.load_ghd('test39')
     suite_tc.load_ghd('test40')
                 '''
 
-    suite_tc.load_ghd('test38')
-    suite_tc.load_ghd('test39')
-
-
-
-
+    suite_tc.load_ghd('test40')
 
 
     now =time.strftime('%Y-%m-%d', time.localtime(time.time()))

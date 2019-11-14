@@ -104,6 +104,7 @@ class TestGhd(MyunitTest):
     #找他人支付错误店号
     def test38(self):
         self.shop()
+        #新建鼠标对象
         mouse = PyMouse()
         self.driver.find_element_by_id('module_poOrderSale1').click()
         WebDriverWait(self.driver, 5, 0.2).until(lambda x: x.find_element_by_id('orderQty_K-W001')).send_keys('5')
@@ -111,6 +112,7 @@ class TestGhd(MyunitTest):
         fk = self.driver.find_element_by_xpath('/html/body/div[3]/form/div[3]/button[2]')
         self.driver.execute_script('arguments[0].click();',fk)
         self.driver.find_element_by_id('NewcardNo').send_keys('asdasd')
+        #移动坐标
         mouse.move(670, 437)
         time.sleep(1)
         mouse.move(500, 500)

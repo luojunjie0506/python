@@ -149,27 +149,53 @@ class TestGhd(MyunitTest):
         self.driver.execute_script('arguments[0].click();',fk)
         self.driver.find_element_by_id('NewcardNo').send_keys('AH5012')
         self.driver.find_element_by_id('butSave').click()
-        time.sleep(2)
+        time.sleep(1)
         self.driver.switch_to.window(self.driver.window_handles[1])
-        time.sleep(2)
-        text = self.driver.find_element_by_xpath('/html/body/div[9]/div/table/tbody/tr[2]/td/div/span').text
+        text = WebDriverWait(self.driver,5,0.2).until(lambda x:x.find_element_by_xpath('/html/body/div[9]/div/table/tbody/tr[2]/td/div/span')).text
         self.assertEqual(text,'订单代付专卖店不能为自己!')
 
-
     #找他人支付功能
-    def test(self):
+    def test41(self):
         self.shop()
         self.driver.find_element_by_id('module_poOrderSale1').click()
+        self.driver.find_element_by_id('recName').clear()
+        self.driver.find_element_by_id('recName').send_keys('ljj')
         self.driver.find_element_by_id('orderQty_M048').send_keys('5')
         self.driver.find_element_by_id('orderQty_M049').send_keys('5')
-        self.driver.find_element_by_xpath('/html/body/div[3]/form/div[3]/button[2]').click()
-        self.driver.find_element_by_id('NewcardNo').send_keys('GD5555')
+        fk = self.driver.find_element_by_xpath('/html/body/div[3]/form/div[3]/button[2]')
+        self.driver.execute_script('arguments[0].click();',fk)
+        self.driver.find_element_by_id('NewcardNo').send_keys('AH8888')
+        self.driver.find_element_by_id('butSave').click()
+        time.sleep(1)
+        self.driver.find_element_by_id('module_poOrderSaleList').click()
+        time.sleep(1)
+        text = self.driver.find_element_by_xpath('/html/body/div[3]/ul/li/div[2]/table/tbody/tr[1]/td[2]').text
+        text1 = self.driver.find_element_by_xpath('/html/body/div[3]/ul/li/div[2]/table/tbody/tr[1]/td[11]/a[2]').text
+        if text == 'ljj':
+            self.assertEqual(text1,'撤销代支付人')
+        else:
+            self.assertEqual(1,2)
 
+    #撤销代支付人选为否
+    def test42(self):
+        self.shop()
+        self.driver.find_element_by_id('module_poOrderSaleList').click()
+        time.sleep(1)
+        self.driver.find_element_by_xpath('/html/body/div[3]/ul/li/div[2]/table/tbody/tr[1]/td[11]/a[2]').click()
+        self.driver.switch_to.alert.dismiss()
+        text1 = self.driver.find_element_by_xpath('/html/body/div[3]/ul/li/div[2]/table/tbody/tr[1]/td[11]/a[2]').text
+        self.assertEqual(text1,'撤销代支付人')
 
-
-    #撤销代支付人
-    def test(self):
-        pass
+    #撤销代支付人选为是
+    def test43(self):
+        self.shop()
+        self.driver.find_element_by_id('module_poOrderSaleList').click()
+        time.sleep(1)
+        self.driver.find_element_by_xpath('/html/body/div[3]/ul/li/div[2]/table/tbody/tr[1]/td[11]/a[2]').click()
+        self.driver.switch_to.alert.accept()
+        time.sleep(2)
+        text1 = self.driver.find_element_by_xpath('/html/body/div[3]/ul/li/div[2]/table/tbody/tr[1]/td[11]/a[2]').text
+        self.assertNotEqual(text1,'撤销代支付人')
 
     #不满3000提示
     def test(self):

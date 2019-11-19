@@ -82,11 +82,19 @@ if __name__ =='__main__':
     suite_tc.load_ghd('test38')
     suite_tc.load_ghd('test39')
     suite_tc.load_ghd('test40')
-             '''
     suite_tc.load_ghd('test41')
     suite_tc.load_ghd('test42')
     suite_tc.load_ghd('test43')
-
+    '''
+    suite_tc.load_ghd('test44')
+    '''
+    suite_tc.load_ghd('test45')
+    suite_tc.load_ghd('test46')
+    suite_tc.load_ghd('test47')
+    suite_tc.load_ghd('test48')
+    suite_tc.load_ghd('test49')
+    suite_tc.load_ghd('test50')
+    '''
 
 
 

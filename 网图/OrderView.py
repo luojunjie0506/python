@@ -5,13 +5,8 @@ from graphviz import Digraph
 
 path = 'D:\\'  #文档路径
 js = 1   #层数
-dy = []     #第一层经销商
-
-yanse = 4
-
-
-#新市场11月申报业绩_20191121 14点43.xlsx
-# 0881198
+dy = []
+rs= 0
 #值转为列表
 def zh(aa):
     citydaima = np.array(aa)
@@ -20,47 +15,77 @@ def zh(aa):
         for j in i:
             return j
 
-def xh():
-    global js,yanse
-     # 存储相同L的行
+def xh(c):
+    global js,rs
+    f = []
     #循环整个文档行
-    js = 0
-    for l in range(1, 5):
-        ls = []
-        # 存储相同L的行
-        for i in range (1,hs):
-            cs = zh(date.loc[[i], [9]])  # 层数
-            if l == cs :
-                ls.append(i)
-        print (ls)
-        a = len(ls)
-        for i  in range(1,a):
-            tjr = zh(date.loc[[ls[i]], [5]])  # 紧急联系人编号
-            bh = zh(date.loc[[ls[i]], [1]])  # 会员编号
-            kh = zh(date.loc[[ls[i]], [2]])  # 会员卡号
-            name = zh(date.loc[[ls[i]], [3]])  # 姓名
-            jb = zh(date.loc[[ls[i]], [4]])  # 职级
-            qt = zh(date.loc[[ls[i]], [7]])  # 全拓.
-            qtdw = zh(date.loc[[ls[i]], [8]])  # 全拓档位
-            fqt = zh(date.loc[[ls[i]], [6]])  # 非全拓
-            '''
-            if  js ==0:
-                A = kh + ',' + name + '\n' + jb + '\n' + str(qt) + '\n' + str(fqt)
-                dot.node(tjr, A, fontname="SimHei", color='Snow4')
-                '''
-            A = kh + ',' + name + '\n' + jb + '\n' + str(qt) + '\n' + str(fqt)
-            B = kh + ',' + name + '\n' + jb + '\n' + str(qt) + '\n' + str(fqt)
+    for i in range(1, hs):
+        tjr = zh(date.loc[[i], [5]])  # 紧急联系人编号
+        bh = zh(date.loc[[i], [1]])  # 会员编号
+        kh = zh(date.loc[[i], [2]])  # 会员卡号
+        name = zh(date.loc[[i], [3]])  # 姓名
+        jb = zh(date.loc[[i], [4]])  # 职级
+        qt = zh(date.loc[[i], [7]])  # 全拓.
+        qtdw = zh(date.loc[[i], [8]])  # 全拓档位
+        fqt = zh(date.loc[[i], [6]])  # 非全拓
+
+        for i in range(1, hs+1):
+            if bh == '20190306327':
+                if qt == 0 and fqt !=0:
+                    A = kh + ',' + name + '\n' + jb + '\n' + '全拓: -'  + '\n' + '非全拓:' + str(fqt)
+                elif qt != 0 and fqt ==0:
+                    A = kh + ',' + name + '\n' + jb + '\n' + '全拓:' + str(qt) + '  档位:' + qtdw + '\n' + '非全拓: -'
+                elif qt == 0 and fqt == 0:
+                    A = kh + ',' + name + '\n' + jb + '\n' + '全拓: -'   + '\n' + '非全拓: -'
+                else:
+                    A = kh + ',' + name + '\n' + jb + '\n' + '全拓:' + str(qt) + '  档位:' + qtdw + '\n' + '非全拓:' + str(fqt)
+            break
+
+        # 查询每层符合条件的人
+        if tjr in c:
+            rs =rs +1
+            #网图每个框显示的内容
+            if qt == 0 and fqt !=0:
+                B = kh + ',' + name + '\n' + jb + '\n' + '全拓: -'  + '\n' + '非全拓:' + str(fqt)
+            elif qt != 0 and fqt ==0:
+                B = kh + ',' + name + '\n' + jb + '\n' + '全拓:' + str(qt) + '  档位:' + qtdw + '\n' + '非全拓: -'
+            elif qt == 0 and fqt == 0:
+                B = kh + ',' + name + '\n' + jb + '\n' + '全拓: -'   + '\n' + '非全拓: -'
+            else:
+                B = kh + ',' + name + '\n' + jb + '\n' + '全拓:' + str(qt) + '  档位:' + qtdw + '\n' + '非全拓:' + str(fqt)
+            f.append(bh)
+            #绘制整个网图
+
             if True:
-                print(1)
-                dot.node(tjr,A, fontname="SimHei")
-                dot.node(bh, B, fontname="SimHei")
-                dot.edge(tjr, bh)
+                if js==1:
+                    if fqt==0 and qt== 0:
+                        dot.node(tjr, A, fontname="SimHei")
+                    else:
+                        dot.node(tjr, A, fontname="SimHei",color='Snow4')
 
-    dot.render('test-output/round-table.gv',view=True)
+                if fqt==0 and qt ==0:
+                    dot.node(tjr, fontname="SimHei")
+                    dot.node(bh, B, fontname="SimHei")
+                    dot.edge(tjr, bh)
+                else :
+                    dot.node(tjr, fontname="SimHei")
+                    dot.node(bh, B, fontname="SimHei",color='Snow4')
+                    dot.edge(tjr, bh)
+
+    if f != c:
+        js = js + 1
+        print(js)
+        xh(f)
+    else:
+        dot.render('test-output/round-table.gv',view=True)
 
 
+#cc = input('请输入要查询的卡号:')
 #dd = input('请输入你的文件名(存储在D盘根目录):')
-dd = '新市场11月申报业绩_20191121 14点43.xlsx'
+
+cc='20190306327'
+dd = '新市场11月申报业绩_20191121 17点06.xlsx'
+dy.append(cc)
 path = path +dd
 #打开excel
 date = pd.read_excel(path,header=None)
@@ -68,35 +93,5 @@ date = pd.read_excel(path,header=None)
 dot = Digraph(name='shop',node_attr={ 'style': 'filled','shape':'box'})
 #获取行数
 hs = len(date)
-#获取最大的l
-a = 0
-for i in range(1, hs):
-    cs = zh(date.loc[[i], [9]])  # 层数
-    if  cs >a :
-        a = cs
-print(a)
-xh()
-
-
-
-'''
-        #取第一层
-        if cs == 1:
-            if qt == 0:
-                A = kh+','+name +'\n'+jb +'\n'+qt +'\n'+fqt
-
-        # 查询每层符合条件的人
-        if tjr in c:
-            #网图每个框显示的内容
-            B =  hy+'\n'+a +'\n'+str('%.1f'%ys)
-            zyj = zyj + ys
-            f.append(hy)
-            #绘制整个网图
-            if True:
-                if js==1:
-                    dot.node(tjr, A, fontname="SimHei", color='Snow4')
-                dot.node(tjr, fontname="SimHei")
-                dot.node(hy, B, fontname="SimHei",color =yanse2)
-'''
-
-
+xh(dy)
+print(rs)

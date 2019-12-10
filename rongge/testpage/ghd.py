@@ -32,8 +32,10 @@ class TestGhd(MyunitTest):
         self.driver.find_element_by_id('findtxt').send_keys('K-W002')
         self.driver.find_element_by_id('findBtn').click()
         time.sleep(1)
-        text1 = self.driver.find_element_by_id('orderQty_K-W002').get_attribute('style')
-        self.assertIn('background',text1)
+        a = self.driver.find_element_by_xpath('/html/body/div[3]/form/div[2]/table/tbody/tr[107]/td[3]').text
+        self.driver.find_element_by_id('orderQty_K-W002').send_keys(1)
+        text1 = self.driver.find_element_by_xpath('/html/body/div[3]/form/div[2]/table/tbody/tr[107]/td[7]').text
+        self.assertEquals(a,text1)
 
     #不选择商品直接下单
     def test33(self):

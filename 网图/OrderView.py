@@ -65,7 +65,7 @@ def xh(c):
 
                 if fqt==0 and qt ==0:
                     dot.node(tjr, fontname="SimHei")
-                    dot.node(bh, B, fontname="SimHei")
+                    dot.node(bh, B, fontname="SimHei",color='Snow')
                     dot.edge(tjr, bh)
                 else :
                     dot.node(tjr, fontname="SimHei")

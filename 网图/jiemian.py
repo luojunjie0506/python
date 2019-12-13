@@ -2,6 +2,8 @@ import tkinter as tk
 import pandas as pd
 import numpy as np
 from graphviz import Digraph
+from tkinter import *
+import threading
 
 js = 1   #层数
 dy = []     #每层经销商
@@ -9,6 +11,17 @@ btlist = [] #表头字典
 xslie= [] #要显示的列
 xslist = [] #要显示的字段
 a = False
+
+def thread_it(func, *args):
+    '''将函数打包进线程'''
+    # 创建
+    t = threading.Thread(target=func, args=args)
+    # 守护 !!!
+    t.setDaemon(True)
+    # 启动
+    t.start()
+    # 阻塞--卡死界面！
+    # t.join()
 
 def func():
     filePath = var2.get()
@@ -115,9 +128,13 @@ if __name__ == '__main__':
     frame = tk.LabelFrame(top)
     frame.pack()
 
+    # 创建框架frame7
+    frame7 = tk.Frame(frame)
+    frame7.pack()
+
     # 创建第二层框架frame2
-    frame2 = tk.Frame(frame)
-    frame2.pack()
+    frame2 = tk.Frame(frame7)
+    frame2.pack(side='left')
     label2 = tk.Label(frame2, text='卡号:', font=('黑体', 10))
     var1 = tk.StringVar()
     card = tk.Entry(frame2,show=None,textvariable=var1,font=('黑体', 8),width = 10)
@@ -125,28 +142,36 @@ if __name__ == '__main__':
     card.pack(side='right')
 
     # 创建第三层框架frame3
-    frame3 = tk.Frame(frame)
-    frame3.pack()
+    frame3 = tk.Frame(frame7)
+    frame3.pack(side='right')
     label3 = tk.Label(frame3, text='文档位置:', font=('黑体', 10))
     var2 = tk.StringVar()
     filePath = tk.Entry(frame3,show=None,textvariable=var2,font=('黑体', 8),width = 30)
     label3.pack(side='left')
     filePath.pack(side='right')
 
-    button1 = tk.Button(frame, text='点击',command = func)
+    button1 = tk.Button(frame, text='点击',command = lambda :thread_it(func))
     button1.pack()
 
     # 创建第四层框架frame4
     frame4 = tk.LabelFrame(frame,text = '表头信息：',height= '50',width='700')
     frame4.pack()
     v = []
-    button2 = tk.Button(frame, text='点击',command = func1)
+    button2 = tk.Button(frame, text='点击',command = lambda :thread_it(func1))
     button2.pack()
+
+    #创建进度条框架frame5
+    frame5 = tk.Frame(frame)
+    frame5.pack()
+    tk.Label(frame5, text='下载进度:', ).pack(side='left')
+    canvas = tk.Canvas(frame5, width=465, height=22, bg="white")
+    canvas.pack(side='right')
 
     #创建第一层框架frame1
     frame1 = tk.Frame(frame)
     frame1.pack()
     label1 = tk.Label(frame1,text='文件储存位置:',font=('黑体',10))
     label1.pack(side='left')
+
 
     top.mainloop()

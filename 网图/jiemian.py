@@ -12,6 +12,8 @@ xslie= [] #要显示的列
 xslist = [] #要显示的字段
 xssj = [] #要显示的字段序号
 cf = False
+tt = 20
+n = 0
 
 def thread_it(func, *args):
     '''将函数打包进线程'''
@@ -48,11 +50,12 @@ def func():
 #C:\Users\jjfly\Desktop\咨委推荐名单调取数据2_20191127（20191210）.xlsx
 
 def func1():
-    global date,hs,dot,card1,hylie,tjrlie
+    global date,hs,dot,card1,hylie,tjrlie,fill_line
     card1 = var_card.get()
     filePath = var_path.get()
     hylie = int(var_hylie.get())
     tjrlie = int(var_trjlie.get())
+    fill_line = canvas.create_rectangle(1.5, 1.5, 0, 23, width=0, fill="green")
     for a in range(0,len(btlist)):
         if v[a].get() ==1:
             xslie.append(a)
@@ -67,7 +70,7 @@ def func1():
     xh(dy)
 
 def xh(zz):
-    global js,cf
+    global js,cf,n,tt
     if cf == False:
         for xx in range(0,len(btlist)):
             if v[xx].get() == True:
@@ -77,7 +80,6 @@ def xh(zz):
     #循环整个文档行
     for i in range(1, hs):
         mhz = []  # 存储每行显示值列表
-        str1 = '' #存储显示内容
         for xx in range(0, len(xssj)):
             b =  xssj[xx]
             hy = zh(date.loc[[i], [hylie-1]])
@@ -86,24 +88,27 @@ def xh(zz):
 
         #取第一层
         if  hy == card1:
+            str1 =''
             for xx in range(0, len(xssj)):
                 b = xssj[xx]
-                str1.join(str(btlist[b]) + ':' +str(mhz[xx]) + '\n')
-                print(btlist[b],mhz[xx])
+                str1=str1 + str(btlist[b]) + ':' +str(mhz[xx]) + '\n'
             filename = card1
+            print(str1)
         # 查询每层符合条件的人
         if tjr in zz:
             #网图每个框显示的内容
+            str2 = ''
             for xx in range(0, len(xssj)):
                 b = xssj[xx]
-                str1.join(str(btlist[b]) + ':' + str(mhz[xx]) + '\n')
+                str2 = str2 + str(btlist[b]) + ':' + str(mhz[xx]) + '\n'
             f.append(hy)
+            print(str2)
             #绘制整个网图
             if True:
                 if js==1:
                         dot.node(tjr, str1, fontname="SimHei", color='LightSkyBlue')
                 dot.node(tjr, fontname="SimHei")
-                dot.node(hy, str1, fontname="SimHei",color ='Pink')
+                dot.node(hy, str2, fontname="SimHei",color ='LightSkyBlue')
                 dot.edge(tjr, hy)
 
             '''
@@ -125,12 +130,19 @@ def xh(zz):
     #判断
     if f != []:
         js = js + 1
+        if n < 540:
+            n = n + tt
+            canvas.coords(fill_line, (0, 0, n, 60))
+        print(js)
         xh(f)
     else:
         path = 'd://'+ filename +'.gv'
         dot.render(path, view=False)
-        Entry_savePath= tk.Entry(frame3, show=None,state ='readonly',textvariable=path, font=('黑体', 8), width=20)
-        Entry_savePath.pack(side=LEFT, fill=Y, expand=YES)
+        label_savePath = tk.Label(frame1, text=path , font=('黑体', 10))
+        label_savePath.pack(side=LEFT, fill=Y, expand=YES)
+        canvas.coords(fill_line, (0, 0, 540, 60))
+        tk.Label(frame5, text='完成', font=('黑体', 10)).pack(side=LEFT, fill=Y, expand=YES)
+
 
 
 #值转为列表
@@ -166,7 +178,6 @@ if __name__ == '__main__':
     var_trjlie = tk.StringVar()
     tjrlie = tk.Entry(frame3,show=None,textvariable=var_trjlie,font=('黑体', 8),width = 5).pack(side=LEFT, fill=Y, expand=YES)
 
-
     button1 = tk.Button(frame, text='获取表头信息',command = lambda :thread_it(func))
     button1.pack()
 
@@ -180,14 +191,13 @@ if __name__ == '__main__':
     #创建进度条框架frame5
     frame5 = tk.Frame(frame)
     frame5.pack()
-    tk.Label(frame5, text='下载进度:', ).pack(side='left')
-    canvas = tk.Canvas(frame5, width=465, height=22, bg="white")
-    canvas.pack(side='right')
+    tk.Label(frame5, text='下载进度:', ).pack(side=LEFT, fill=Y, expand=YES)
+    canvas = tk.Canvas(frame5, width=540, height=22, bg="white")
+    canvas.pack(side=LEFT, fill=Y, expand=YES)
 
     #创建文件储存位置框架frame1
     frame1 = tk.Frame(frame)
     frame1.pack()
     label1 = tk.Label(frame1,text='文件储存位置:',font=('黑体',10)).pack(side=LEFT, fill=Y,expand=YES)
-
 
     top.mainloop()

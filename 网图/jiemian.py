@@ -4,6 +4,7 @@ import numpy as np
 from graphviz import Digraph
 from tkinter import *
 import threading
+import os
 
 js = 1   #层数
 dy = []     #每层经销商
@@ -14,6 +15,7 @@ xssj = [] #要显示的字段序号
 cf = False
 tt = 20
 n = 0
+
 
 def thread_it(func, *args):
     '''将函数打包进线程'''
@@ -56,6 +58,9 @@ def func1():
     hylie = int(var_hylie.get())
     tjrlie = int(var_trjlie.get())
     fill_line = canvas.create_rectangle(1.5, 1.5, 0, 23, width=0, fill="green")
+    #进度条清空
+    canvas.coords(fill_line, (0, 0, 0, 60))
+    tk.Label(frame5, text='', font=('黑体', 10)).pack(side=LEFT, fill=Y, expand=YES)
     for a in range(0,len(btlist)):
         if v[a].get() ==1:
             xslie.append(a)
@@ -71,6 +76,7 @@ def func1():
 
 def xh(zz):
     global js,cf,n,tt
+    #判断是否多选项是否选中并将选中值序号加入列表xssj
     if cf == False:
         for xx in range(0,len(btlist)):
             if v[xx].get() == True:
@@ -93,7 +99,6 @@ def xh(zz):
                 b = xssj[xx]
                 str1=str1 + str(btlist[b]) + ':' +str(mhz[xx]) + '\n'
             filename = card1
-            print(str1)
         # 查询每层符合条件的人
         if tjr in zz:
             #网图每个框显示的内容
@@ -102,7 +107,6 @@ def xh(zz):
                 b = xssj[xx]
                 str2 = str2 + str(btlist[b]) + ':' + str(mhz[xx]) + '\n'
             f.append(hy)
-            print(str2)
             #绘制整个网图
             if True:
                 if js==1:
@@ -133,10 +137,9 @@ def xh(zz):
         if n < 540:
             n = n + tt
             canvas.coords(fill_line, (0, 0, n, 60))
-        print(js)
         xh(f)
     else:
-        path = 'd://'+ filename +'.gv'
+        path = os.getcwd()+ filename +'.gv'
         dot.render(path, view=False)
         label_savePath = tk.Label(frame1, text=path , font=('黑体', 10))
         label_savePath.pack(side=LEFT, fill=Y, expand=YES)

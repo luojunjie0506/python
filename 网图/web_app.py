@@ -6,6 +6,8 @@ import numpy as np
 from graphviz import Digraph
 import threading
 import os
+import datetime
+
 
 
 class Example(QWidget):
@@ -16,7 +18,20 @@ class Example(QWidget):
         self.xssj = [] #要显示的字段序号
         self.cf = False
         self.js = 1   #层数
+        self.b = []   #存多选框的变量列表
         self.initUI()
+        self.step = 0
+
+    def thread_it(self,func, *args):
+        '''将函数打包进线程'''
+        # 创建
+        t = threading.Thread(target=func, args=args)
+        # 守护 !!!
+        t.setDaemon(True)
+        # 启动
+        t.start()
+        # 阻塞--卡死界面！
+        # t.join()
 
     def initUI(self):
         failPath = QLabel('文档位置:')
@@ -79,10 +94,9 @@ class Example(QWidget):
         RightWidget = QWidget()
         RightWidget.setLayout(RightLayout)
 
-
         failButton.clicked.connect(self.showDialog)
         btButton.clicked.connect(self.huoqubiaotou)
-        #ztButton.clicked.connect(self.zhitu)
+        ztButton.clicked.connect(lambda :self.thread_it(self.zhitu))
 
         zLayout.addWidget(LeftWidget)
         zLayout.addWidget(RightWidget)
@@ -99,11 +113,17 @@ class Example(QWidget):
         self.failPathText.setText(fname[0])
 
     def huoqubiaotou(self):
+        #再次点击清空表头信息框显示和进度条设置为o
+        self.jdtBar.setValue(0)
+        self.savePathText.setText('')
+
+        for i in range(self.btLayout.count()):
+            self.btLayout.removeWidget(self.btLayout.itemAt(i).widget())
+
         filePath = self.failPathText.text()
         #打开excel
         date = pd.read_excel(filePath, header=None)
         f = []
-        b= []
         #循环表头
         bt = date.ix[0].values
         #表头长度
@@ -113,70 +133,61 @@ class Example(QWidget):
                 li = bt[i].strip()
                 self.btlist.append(li)
 
-        #新建变量
+        #新建变量存多选框
         for a in range(0, len(self.btlist)):
-            b.append('checkBox_'+str(a))
+            self.b.append('checkBox_'+str(a))
 
         # 写入frame4中
         for a in range(0, len(self.btlist)):
-            b[a] = QCheckBox(self.btlist[a], self)
-            self.btLayout.addWidget(b[a])
+            self.b[a] = QCheckBox(self.btlist[a], self)
+            self.btLayout.addWidget(self.b[a])
 
-
-
-    '''
     def zhitu(self):
         filePath1 = self.failPathText.text()
-        card1 = self.cardNoEdit.text()
+        self.card1 = self.cardNoEdit.text()
         self.cardLie1 = int(self.cardLieEdit.text())
         self.tjrLie1 = int(self.tjrLieEdit.text())
         # 打开excel
-        date = pd.read_excel(filePath1, header=None)
+        self.date = pd.read_excel(filePath1, header=None)
         # 获取行数
-        self.hs = len(date)
+        self.hs = len(self.date)
         dy = []
-        dy.append(card1)
+        dy.append(self.card1)
         # 创建网图
         self.dot = Digraph(name='shop', node_attr={'style': 'filled', 'shape': 'box'})
         self.xh(dy)
 
-
     def xh(self,zz):
         if self.cf == False:
             for a in range(0, len(self.btlist)):
-                m = getattr(self,"checkBox_%d" % a)
-                if m.isChecked() == True:
+                if self.b[a].isChecked() == True:
                     self.xssj.append(a)
-            print(self.xssj)
             self.cf = True
-            self.savePathText.setText(str(self.cardLie1 - 1))
-
-
-        
         f = []
         # 循环整个文档行
         for i in range(1, self.hs):
             mhz = []  # 存储每行显示值列表
+            hy = self.zh(self.date.loc[[i], [self.cardLie1 - 1]])
+            tjr = self.zh(self.date.loc[[i], [self.tjrLie1 - 1]])
             for xx in range(0, len(self.xssj)):
-                b = self.xssj[xx]
-                hy = self.zh(self.date.loc[[i], [self.cardLie1- 1]])
-                tjr = self.zh(self.date.loc[[i], [self.tjrLie1 - 1]])
-                mhz.append(self.zh(self.date.loc[[i], [b]]))
+                abc = self.xssj[xx]
+                mhz.append(self.zh(self.date.loc[[i], [abc]]))
 
             # 取第一层
             if hy == self.card1:
                 str1 = ''
                 for xx in range(0, len(self.xssj)):
-                    b = self.xssj[xx]
-                    str1 = str1 + str(self.btlist[b]) + ':' + str(mhz[xx]) + '\n'
+                    abc = self.xssj[xx]
+                    str1 = str1 + str(self.btlist[abc]) + ':' + str(mhz[xx]) + '\n'
                 filename = self.card1
+
             # 查询每层符合条件的人
             if tjr in zz:
                 # 网图每个框显示的内容
                 str2 = ''
                 for xx in range(0, len(self.xssj)):
-                    b = self.xssj[xx]
-                    str2 = str2 + str(self.btlist[b]) + ':' + str(mhz[xx]) + '\n'
+                    abc = self.xssj[xx]
+                    str2 = str2 + str(self.btlist[abc]) + ':' + str(mhz[xx]) + '\n'
                 f.append(hy)
                 # 绘制整个网图
                 if True:
@@ -188,13 +199,18 @@ class Example(QWidget):
 
         # 判断
         if f != []:
-            js = self.js + 1
+            self.js = self.js + 1
+            if self.step <100:
+                self.step = self.step + 10
+                self.jdtBar.setValue(self.step)
             self.xh(f)
 
         else:
-            path = os.getcwd() + filename + '.gv'
+            self.jdtBar.setValue(100)
+            nowtime = datetime.datetime.now().strftime('%Y%m%d')
+            path = os.getcwd() +'\\'+filename + '  '+nowtime
             self.dot.render(path, view=False)
-            self.failPathText.setText(path)
+            self.savePathText.setText(str(path))
 
     def zh(self,aa):
         citydaima = np.array(aa)
@@ -202,7 +218,6 @@ class Example(QWidget):
         for i in citydaima:
             for j in i:
                 return j
-    '''
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
@@ -210,4 +225,4 @@ if __name__ == '__main__':
     sys.exit(app.exec_())
 
 
-#0038501
+#20190306327

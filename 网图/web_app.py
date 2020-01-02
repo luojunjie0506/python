@@ -1,6 +1,7 @@
 import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 import pandas as pd
 import numpy as np
 from graphviz import Digraph
@@ -8,19 +9,18 @@ import threading
 import os
 import datetime
 
-
-
 class Example(QWidget):
     def __init__(self):
         super().__init__()
         self.btlist = []  # 表头字典
         self.v = []
         self.xssj = [] #要显示的字段序号
+        self.b = []  # 存多选框的变量列表
         self.cf = False
         self.js = 1   #层数
-        self.b = []   #存多选框的变量列表
         self.initUI()
         self.step = 0
+        self.kaiguan = 0
 
     def thread_it(self,func, *args):
         '''将函数打包进线程'''
@@ -45,8 +45,8 @@ class Example(QWidget):
         self.tjrLieEdit = QLineEdit()
         self.tjrLieEdit.setValidator(QIntValidator())
         btxxLabel = QLabel('表头信息:')
-        #表头信息框
-        self.btLayout = QHBoxLayout()
+        # 表头信息框
+        self.btLayout = QGridLayout()
         self.square = QWidget()
         self.square.setLayout(self.btLayout)
         ztLabel = QLabel('制图进度:')
@@ -61,65 +61,82 @@ class Example(QWidget):
         Button3 = QPushButton('Button3')
 
         #主布局
-        zLayout = QHBoxLayout()
-        #左布局
+        zLayout = QHBoxLayout(self)
+        left = QFrame(self)
+        right = QFrame(self)
+        splitter1 = QSplitter(Qt.Horizontal)
+        splitter1.addWidget(left)
+        splitter1.setSizes([20,]) #设置分隔条位置
+        splitter1.addWidget(right)
+        zLayout.addWidget(splitter1)
+        self.setLayout(zLayout)
+
+        # 左布局
         LeftLayout = QVBoxLayout()
         LeftLayout.addWidget(Button1)
         LeftLayout.addWidget(Button2)
         LeftLayout.addWidget(Button3)
-        LeftWidget = QWidget()
+        LeftWidget = QWidget(left)
         LeftWidget.setLayout(LeftLayout)
 
-        #右布局
-        RightLayout = QGridLayout()
-        RightLayout.setSpacing(15)
-        RightLayout.addWidget(failPath,1,0,1,1)
-        RightLayout.addWidget(self.failPathText, 1,1,1,3)
-        RightLayout.addWidget(failButton, 1,4,1,1)
-        RightLayout.addWidget(cardNo, 2,0)
-        RightLayout.addWidget(self.cardNoEdit, 2,1)
-        RightLayout.addWidget(cardLie, 2,2)
-        RightLayout.addWidget(self.cardLieEdit, 2,3)
-        RightLayout.addWidget(tjrLie, 2,4)
-        RightLayout.addWidget(self.tjrLieEdit, 2,5)
-        RightLayout.addWidget(btButton, 3,4,1,1)
-        RightLayout.addWidget(btxxLabel, 4, 0)
-        RightLayout.addWidget(self.square, 5,0,2,6)
-        RightLayout.addWidget(ztButton, 9, 4, 1, 1)
-        RightLayout.addWidget(ztLabel, 10, 0,)
-        RightLayout.addWidget(self.jdtBar, 10, 1,1,5)
-        RightLayout.addWidget(savePath, 11, 0)
-        RightLayout.addWidget(self.savePathText, 11, 1,1,3)
 
-        RightWidget = QWidget()
-        RightWidget.setLayout(RightLayout)
+        #右布局1
+        self.RightLayout1 = QGridLayout()
+        self.RightLayout1.setSpacing(15)
+        self.RightLayout1.addWidget(failPath,1,0,1,1)
+        self.RightLayout1.addWidget(self.failPathText, 1,1,1,3)
+        self.RightLayout1.addWidget(failButton, 1,4,1,1)
+        self.RightLayout1.addWidget(cardNo, 2,0)
+        self.RightLayout1.addWidget(self.cardNoEdit, 2,1)
+        self.RightLayout1.addWidget(cardLie, 2,2)
+        self.RightLayout1.addWidget(self.cardLieEdit, 2,3)
+        self.RightLayout1.addWidget(tjrLie, 2,4)
+        self.RightLayout1.addWidget(self.tjrLieEdit, 2,5)
+        self.RightLayout1.addWidget(btButton, 3,4,1,1)
+        self.RightLayout1.addWidget(btxxLabel, 4, 0)
+        self.RightLayout1.addWidget(self.square, 5, 0, 2, 6)
+        self.RightLayout1.addWidget(ztButton, 9, 4, 1, 1)
+        self.RightLayout1.addWidget(ztLabel, 10, 0,)
+        self.RightLayout1.addWidget(self.jdtBar, 10, 1,1,5)
+        self.RightLayout1.addWidget(savePath, 11, 0)
+        self.RightLayout1.addWidget(self.savePathText, 11, 1,1,3)
+
+        RightWidget1 = QWidget()
+        RightWidget1.setLayout(self.RightLayout1)
+
+        # 右布局2
+        RightWidget2 = QWidget()
+        self.RightLayout2 = QGridLayout()
+        self.RightLayout2.setSpacing(15)
+        RightWidget2.setLayout(self.RightLayout2)
+
+        #界面切换
+        self.stackedWidget = QStackedWidget(right)
+        self.stackedWidget.addWidget(RightWidget1)
+        self.stackedWidget.addWidget(RightWidget2)
+        Button1.clicked.connect(self.tiaozhuan1)
+        Button2.clicked.connect(self.tiaozhuan2)
 
         failButton.clicked.connect(self.showDialog)
         btButton.clicked.connect(self.huoqubiaotou)
         ztButton.clicked.connect(lambda :self.thread_it(self.zhitu))
 
-        zLayout.addWidget(LeftWidget)
-        zLayout.addWidget(RightWidget)
-        self.setLayout(zLayout)
-
         self.square.setStyleSheet("QWidget { background-color: Blue}")
-        self.resize(700,400)
+        self.setFixedSize(800,400)
         self.setWindowTitle('制图')
         self.setWindowIcon(QIcon('D:\\py\\web\\7559\\q1.ico'))
         self.show()
+
+    def tiaozhuan1(self):
+        self.stackedWidget.setCurrentIndex(0)
+    def tiaozhuan2(self):
+        self.stackedWidget.setCurrentIndex(1)
 
     def showDialog(self):
         fname = QFileDialog.getOpenFileName(self,'Open file','/home')
         self.failPathText.setText(fname[0])
 
     def huoqubiaotou(self):
-        #再次点击清空表头信息框显示和进度条设置为o
-        self.jdtBar.setValue(0)
-        self.savePathText.setText('')
-
-        for i in range(self.btLayout.count()):
-            self.btLayout.removeWidget(self.btLayout.itemAt(i).widget())
-
         filePath = self.failPathText.text()
         #打开excel
         date = pd.read_excel(filePath, header=None)
@@ -128,6 +145,17 @@ class Example(QWidget):
         bt = date.ix[0].values
         #表头长度
         btL = len(bt)
+
+        #q清空显示
+        if self.kaiguan == 1:
+            # 再次点击清空表头信息框显示和进度条设置为o
+            self.jdtBar.reset()
+            self.savePathText.setText('')
+            for a in range(0, len(self.btlist)):
+                self.b[a].deleteLater()
+            self.b.clear()
+            self.btlist.clear()
+
         if len(f) == 0:
             for i in range(0, btL):
                 li = bt[i].strip()
@@ -139,14 +167,20 @@ class Example(QWidget):
 
         # 写入frame4中
         for a in range(0, len(self.btlist)):
-            self.b[a] = QCheckBox(self.btlist[a], self)
-            self.btLayout.addWidget(self.b[a])
+            if a > 6:
+                self.b[a] = QCheckBox(self.btlist[a], self)
+                self.btLayout.addWidget(self.b[a],2,a-7)
+            else:
+                self.b[a] = QCheckBox(self.btlist[a], self)
+                self.btLayout.addWidget(self.b[a],1,a)
+
+        self.kaiguan = 1
 
     def zhitu(self):
         filePath1 = self.failPathText.text()
         self.card1 = self.cardNoEdit.text()
-        self.cardLie1 = int(self.cardLieEdit.text())
-        self.tjrLie1 = int(self.tjrLieEdit.text())
+        self.cardLie1 = self.cardLieEdit.text()
+        self.tjrLie1 = self.tjrLieEdit.text()
         # 打开excel
         self.date = pd.read_excel(filePath1, header=None)
         # 获取行数
@@ -167,8 +201,8 @@ class Example(QWidget):
         # 循环整个文档行
         for i in range(1, self.hs):
             mhz = []  # 存储每行显示值列表
-            hy = self.zh(self.date.loc[[i], [self.cardLie1 - 1]])
-            tjr = self.zh(self.date.loc[[i], [self.tjrLie1 - 1]])
+            hy = self.zh(self.date.loc[[i], [int(self.cardLie1) - 1]])
+            tjr = self.zh(self.date.loc[[i], [int(self.tjrLie1) - 1]])
             for xx in range(0, len(self.xssj)):
                 abc = self.xssj[xx]
                 mhz.append(self.zh(self.date.loc[[i], [abc]]))
@@ -179,7 +213,6 @@ class Example(QWidget):
                 for xx in range(0, len(self.xssj)):
                     abc = self.xssj[xx]
                     str1 = str1 + str(self.btlist[abc]) + ':' + str(mhz[xx]) + '\n'
-                filename = self.card1
 
             # 查询每层符合条件的人
             if tjr in zz:
@@ -208,7 +241,7 @@ class Example(QWidget):
         else:
             self.jdtBar.setValue(100)
             nowtime = datetime.datetime.now().strftime('%Y%m%d')
-            path = os.getcwd() +'\\'+filename + '  '+nowtime
+            path = os.getcwd() +'\\'+self.card1 + '  '+nowtime
             self.dot.render(path, view=False)
             self.savePathText.setText(str(path))
 

@@ -5,19 +5,8 @@ from graphviz import Digraph
 
 path = 'D:\\'  #文档路径
 js = 1   #层数
-zyj =0   #总业绩
-zfc=''  #每层业绩字符串
-yj5=0   #5层业绩
-yj10 = 0    #10层业绩
-zrs = 0     #总人数
-ds = 0      #市场数
-rs5 = 0     #5层人数
-dy = []     #每层经销商
-yanse = 4
-
-
-#201909领导奖压缩网(剔除未达标)L.xlsx
-# 0881198
+dy = []
+rs= 0
 #值转为列表
 def zh(aa):
     citydaima = np.array(aa)
@@ -27,90 +16,82 @@ def zh(aa):
             return j
 
 def xh(c):
-    global zyj,js,zfc,yj10,zrs,yj5,dy,ds,rs5,yanse
+    global js,rs
     f = []
-    rs = 0
-    mcyj = 0
     #循环整个文档行
     for i in range(1, hs):
-        ys = zh(date.loc[[i], [7]])  #压缩业绩
-        tjr = zh(date.loc[[i], [8]])    #紧急联系人编号
-        hy = zh(date.loc[[i], [2]])     #会员编号
-        jb = zh(date.loc[[i],[5]])      #级别
-        sc = zh(date.loc[[i], [4]])     #市场数
-        yanse2 = 'Snow' + str(yanse-1)
+        tjr = zh(date.loc[[i], [5]])  # 紧急联系人编号
+        bh = zh(date.loc[[i], [1]])  # 会员编号
+        kh = zh(date.loc[[i], [2]])  # 会员卡号
+        name = zh(date.loc[[i], [3]])  # 姓名
+        jb = zh(date.loc[[i], [4]])  # 职级
+        qt = zh(date.loc[[i], [7]])  # 全拓.
+        qtdw = zh(date.loc[[i], [8]])  # 全拓档位
+        fqt = zh(date.loc[[i], [6]])  # 非全拓
 
-        #取第一层
-        if hy == cc:
-            # 级别的判断
-            if jb==8:
-                a='高经'
-            else:
-                a='经理'
-            A = hy+'\n'+a +'\n'+str('%.1f'%ys)
+        for i in range(1, hs+1):
+            if bh == '20190306327':
+                if qt == 0 and fqt !=0:
+                    A = kh + ',' + name + '\n' + jb + '\n' + '全拓: -'  + '\n' + '非全拓:' + str(fqt)
+                elif qt != 0 and fqt ==0:
+                    A = kh + ',' + name + '\n' + jb + '\n' + '全拓:' + str(qt) + '  档位:' + qtdw + '\n' + '非全拓: -'
+                elif qt == 0 and fqt == 0:
+                    A = kh + ',' + name + '\n' + jb + '\n' + '全拓: -'   + '\n' + '非全拓: -'
+                else:
+                    A = kh + ',' + name + '\n' + jb + '\n' + '全拓:' + str(qt) + '  档位:' + qtdw + '\n' + '非全拓:' + str(fqt)
+            break
 
         # 查询每层符合条件的人
         if tjr in c:
-            #取出要查询人的市场数
-            if rs ==0:
-                rr = zh(dy)
-                if hy == rr :
-                    ds =sc
-            zrs =zrs +1
-
-            if jb==8:
-                a='高经'
-            else:
-                a='经理'
+            rs =rs +1
             #网图每个框显示的内容
-            B =  hy+'\n'+a +'\n'+str('%.1f'%ys)
-            zyj = zyj + ys
-            f.append(hy)
+            if qt == 0 and fqt !=0:
+                B = kh + ',' + name + '\n' + jb + '\n' + '全拓: -'  + '\n' + '非全拓:' + str(fqt)
+            elif qt != 0 and fqt ==0:
+                B = kh + ',' + name + '\n' + jb + '\n' + '全拓:' + str(qt) + '  档位:' + qtdw + '\n' + '非全拓: -'
+            elif qt == 0 and fqt == 0:
+                B = kh + ',' + name + '\n' + jb + '\n' + '全拓: -'   + '\n' + '非全拓: -'
+            else:
+                B = kh + ',' + name + '\n' + jb + '\n' + '全拓:' + str(qt) + '  档位:' + qtdw + '\n' + '非全拓:' + str(fqt)
+            f.append(bh)
             #绘制整个网图
+
             if True:
                 if js==1:
-                    dot.node(tjr, A, fontname="SimHei", color='Snow4')
-                dot.node(tjr, fontname="SimHei")
-                dot.node(hy, B, fontname="SimHei",color =yanse2)
-                dot.edge(tjr, hy)
-                if js <=10:
-                    yj10 = yj10 + ys
-                    if js<=5:
-                        mcyj= mcyj +ys
-                        yj5 = yj5 +ys
-                        rs = rs + 1
-                        rs5 =rs5 +1
+                    if fqt==0 and qt== 0:
+                        dot.node(tjr, A, fontname="SimHei",color = 'GhostWhite')
+                    else:
+                        dot.node(tjr, A, fontname="SimHei",color='LightSkyBlue')
 
+                if fqt==0 and qt ==0:
+                    dot.node(tjr, fontname="SimHei")
+                    dot.node(bh, B, fontname="SimHei",color = 'GhostWhite')
+                    dot.edge(tjr, bh)
+                else :
+                    dot.node(tjr, fontname="SimHei")
+                    dot.node(bh, B, fontname="SimHei",color='LightSkyBlue')
+                    dot.edge(tjr, bh)
 
     if f != c:
-        if js <= 5:
-            zfc = zfc + '第' + str(js) + '层:人数' + str(rs) + ',业绩' + str('%.2f' % (mcyj / 10000)) + '万\n'
-            print(zfc)
         js = js + 1
-        if yanse >2:
-            yanse = yanse - 1
-        print(zyj)
+        print(js)
         xh(f)
     else:
-        a1='5L职级为经理或高经:共'+str(rs5) +'\n'
-        a2 = '合格市场数:'+str(sc)+'个' + '\n'
-        a3='5L:'+str('%.2f' % (yj5/10000))+'万'+'/全网:'+str('%.2f' % (zyj/10000))+'万'+str('{:.0%}'.format(yj5/zyj))+'\n'
-        a4 = '10L:'+str('%.2f' % (yj10/10000))+'万'+'/全网:'+str('%.2f' % (zyj/10000))+'万'+str('{:.0%}'.format(yj10/zyj))+'\n'
-        zfc =a1 +a2 +a3 +a4 +zfc
-        dot.node(zfc, fontname="SimHei", color="White",fontsize='15')
         dot.render('test-output/round-table.gv',view=True)
 
 
+#cc = input('请输入要查询的卡号:')
+#dd = input('请输入你的文件名(存储在D盘根目录):')
 
-cc = input('请输入要查询的卡号:')
-dd = input('请输入你的文件名(存储在D盘根目录):')
-path = path +dd
+cc='20190306327'
+dd = '新市场12月业绩_20191231.xlsx'
 dy.append(cc)
+path = path +dd
 #打开excel
 date = pd.read_excel(path,header=None)
 #创建网图
 dot = Digraph(name='shop',node_attr={ 'style': 'filled','shape':'box'})
 #获取行数
 hs = len(date)
-#
 xh(dy)
+print(rs)

@@ -59,17 +59,17 @@ def xh(c):
             if True:
                 if js==1:
                     if fqt==0 and qt== 0:
-                        dot.node(tjr, A, fontname="SimHei")
+                        dot.node(tjr, A, fontname="SimHei",color='GhostWhite')
                     else:
-                        dot.node(tjr, A, fontname="SimHei",color='Snow4')
+                        dot.node(tjr, A, fontname="SimHei",color='SkyBlue')
 
                 if fqt==0 and qt ==0:
                     dot.node(tjr, fontname="SimHei")
-                    dot.node(bh, B, fontname="SimHei",color='Snow')
+                    dot.node(bh, B, fontname="SimHei",color='GhostWhite')
                     dot.edge(tjr, bh)
                 else :
                     dot.node(tjr, fontname="SimHei")
-                    dot.node(bh, B, fontname="SimHei",color='Snow4')
+                    dot.node(bh, B, fontname="SimHei",color='SkyBlue')
                     dot.edge(tjr, bh)
 
     if f != c:
@@ -77,14 +77,14 @@ def xh(c):
         print(js)
         xh(f)
     else:
-        dot.render('test-output/round-table.gv',view=True)
+        dot.render('D:\\round-table.gv',view=True)
 
 
 #cc = input('请输入要查询的卡号:')
 #dd = input('请输入你的文件名(存储在D盘根目录):')
 
 cc='20190306327'
-dd = '新市场11月申报业绩_20191121 17点06.xlsx'
+dd = '新市场12月业绩_20200101.xlsx'
 dy.append(cc)
 path = path +dd
 #打开excel

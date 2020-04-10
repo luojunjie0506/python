@@ -82,7 +82,7 @@ class Example(QWidget):
 
         #右布局1
         self.RightLayout1 = QGridLayout()
-        self.RightLayout1.setSpacing(15)
+        self.RightLayout1.setSpacing(17)
         self.RightLayout1.addWidget(failPath,1,0,1,1)
         self.RightLayout1.addWidget(self.failPathText, 1,1,1,3)
         self.RightLayout1.addWidget(failButton, 1,4,1,1)
@@ -94,15 +94,17 @@ class Example(QWidget):
         self.RightLayout1.addWidget(self.tjrLieEdit, 2,5)
         self.RightLayout1.addWidget(btButton, 3,4,1,1)
         self.RightLayout1.addWidget(btxxLabel, 4, 0)
-        self.RightLayout1.addWidget(self.square, 5, 0, 2, 6)
-        self.RightLayout1.addWidget(ztButton, 9, 4, 1, 1)
-        self.RightLayout1.addWidget(ztLabel, 10, 0,)
-        self.RightLayout1.addWidget(self.jdtBar, 10, 1,1,5)
-        self.RightLayout1.addWidget(savePath, 11, 0)
-        self.RightLayout1.addWidget(self.savePathText, 11, 1,1,3)
+        self.RightLayout1.addWidget(self.square, 5, 0, 3, 6)
+        self.RightLayout1.addWidget(ztButton, 10, 4, 1, 1)
+        self.RightLayout1.addWidget(ztLabel, 11, 0,)
+        self.RightLayout1.addWidget(self.jdtBar, 11, 1,1,5)
+        self.RightLayout1.addWidget(savePath, 12, 0)
+        self.RightLayout1.addWidget(self.savePathText, 12, 1,1,3)
+
 
         RightWidget1 = QWidget()
         RightWidget1.setLayout(self.RightLayout1)
+
 
         # 右布局2
         RightWidget2 = QWidget()
@@ -167,11 +169,12 @@ class Example(QWidget):
 
         # 写入frame4中
         for a in range(0, len(self.btlist)):
-            if a > 6:
+            if a > 5 :
                 self.b[a] = QCheckBox(self.btlist[a], self)
-                self.btLayout.addWidget(self.b[a],2,a-7)
+                self.btLayout.addWidget(self.b[a],2,a-6)
             else:
                 self.b[a] = QCheckBox(self.btlist[a], self)
+
                 self.btLayout.addWidget(self.b[a],1,a)
 
         self.kaiguan = 1
@@ -212,7 +215,12 @@ class Example(QWidget):
                 str1 = ''
                 for xx in range(0, len(self.xssj)):
                     abc = self.xssj[xx]
-                    str1 = str1 + str(self.btlist[abc]) + ':' + str(mhz[xx]) + '\n'
+                    # 判断是否为空值
+                    if pd.isna(mhz[xx]):
+                        ww = '-'
+                    else:
+                        ww = str(mhz[xx])
+                    str1 = str1 + str(self.btlist[abc]) + ':' + ww  + '\n'
 
             # 查询每层符合条件的人
             if tjr in zz:
@@ -220,7 +228,12 @@ class Example(QWidget):
                 str2 = ''
                 for xx in range(0, len(self.xssj)):
                     abc = self.xssj[xx]
-                    str2 = str2 + str(self.btlist[abc]) + ':' + str(mhz[xx]) + '\n'
+                    #判断是否为空值
+                    if pd.isna(mhz[xx]):
+                        ww = '-'
+                    else:
+                        ww = str(mhz[xx])
+                    str2 = str2 + str(self.btlist[abc]) + ':' + ww + '\n'
                 f.append(hy)
                 # 绘制整个网图
                 if True:

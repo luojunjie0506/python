@@ -93,10 +93,11 @@ def xhs(dh,hs):
 
 
 def xr(list1,list2):
-    num = 0
+    global style2
+
     a = "一、服务费清单发放说明：服务费清单只提供电子档一种格式，如需图片格式，可联系公司客服。\n二、服务费发放说明：服务费清单中应发服务费金额包含直接服务奖金额。\n三、服务费发放说明：服务费清单中增加“转货款”列，应发服务费金额已扣减转货款金额。"
     workbook = xlwt.Workbook(encoding='utf-8')
-    sheet1 = workbook.add_sheet("测试表格")  # 新建sheet
+    sheet6 = workbook.add_sheet("表格")  # 新建sheet
 
     style = XFStyle()
     style2 = XFStyle()
@@ -127,6 +128,7 @@ def xr(list1,list2):
     al1.vert = 0x01
     al1.wrap = 1  # 设置自动换行
     style3.alignment = al1
+    style4.alignment = al1
 
     # 设置字体格式fnt
     fnt = Font()
@@ -151,143 +153,164 @@ def xr(list1,list2):
     fnt2.colour_index = 4
     style4.font = fnt2
 
-    '''
-    num = 0
-    #list写入数据到table中
-    for i in range(0,len(list1)):
-        if i == 0:
-            bzdh = sheet0.cell(list1[0],0 ).value
-            print(bzdh)
-            for l in range(0,list3[i]-1):
-                xx = sheet0.cell(list1[0], l).value  # 获取每行信息
-                if xx =='':
-                    continue
-                else:
-                    new_workbook.get_sheet(0).write(list5[num][0], list5[num][1], label='xx')
-                    num =num+1
-
-        elif i ==1:
-            for l in range(0,list3[i]-1):
-                xx = sheet0.cell(list1[1], l).value  # 获取每行信息
-                if xx =='':
-                    continue
-                else:
-                    new_workbook.get_sheet(1).write(list5[num][0], list5[num][1], label='xx')
-                    num =num+1
-        elif i == 2:
-            for l in range(0,list3[i]-1):
-                xx = sheet0.cell(list1[2], l).value  # 获取每行信息
-                if xx =='':
-                    continue
-                else:
-                    new_workbook.get_sheet(2).write(list5[num][0], list5[num][1], label='xx')
-                    num =num+1
-        elif i ==3:
-            for l in range(0,list3[i]-1):
-                xx = sheet0.cell(list1[3], l).value  # 获取每行信息
-                if xx =='':
-                    continue
-                else:
-                    new_workbook.get_sheet(3).write(list5[num][0], list5[num][1], label='xx')
-                    num =num+1
-        else:
-            for l in range(0,list3[i]-1):
-                xx = sheet0.cell(list1[4], l).value  # 获取每行信息
-                if xx =='':
-                    continue
-                else:
-                    new_workbook.get_sheet(4).write(list5[num][0], list5[num][1], label='xx')
-                    num =num+1
-                    
-    '''
-
-
     # 写入数据
-    sheet1.write_merge(0, 0, 0, 3, "专卖店编号：", style)
-    sheet1.write_merge(1, 1, 0, 1, "店主姓名：", style)
-    sheet1.write(1, 7, "月份：", style)
-    sheet1.write_merge(1, 1, 8, 10, "202003", style)
-    sheet1.write_merge(2, 2, 0, 1, "Email：", style)
-    sheet1.write_merge(3, 3, 0, 1, "报单数量：", style)
-    sheet1.write_merge(3, 3, 2, 6, "xx", style)
-    sheet1.write(3, 7, "报单额：", style)
-    sheet1.write_merge(4, 4, 0, 10, a, style3)
-    sheet1.write_merge(5, 5, 0, 1, "备注：", style4)
-    sheet1.write_merge(6, 6, 0, 1, "200元以下合计", style)
-    sheet1.write_merge(7, 7, 0, 1, "店补合计", style)
+    sheet6.write_merge(0, 0, 0, 3, "专卖店编号：", style)
+    sheet6.write_merge(1, 1, 0, 1, "店主姓名：", style)
+    sheet6.write(1, 7, "月份：", style)
+    sheet6.write_merge(1, 1, 8, 10, "202003", style)
+    sheet6.write_merge(2, 2, 0, 1, "Email：", style)
+    sheet6.write_merge(3, 3, 0, 1, "报单数量：", style)
+    sheet6.write(3, 7, "报单额：", style)
+    sheet6.write_merge(4, 4, 0, 10, a, style3)
+    sheet6.write_merge(5, 5, 0, 1, "备注：", style4)
+    sheet6.write_merge(6, 6, 0, 1, "200元以下合计", style)
+    sheet6.write_merge(7, 7, 0, 1, "店补合计", style)
+
 
     #从表中取值
-    while num < len(list1):
-        if list1[num] == 0:
-            num = num + 1
-        else:
-            for l in range(0, list3[num] - 1):
+    for i in range(0, len(list1)):
+        if i == 0:
+            bzdh = sheet0.cell(list1[0], 0).value
+            for l in range(0, list4[i] ):
                 xx = sheet0.cell(list1[0], l).value  # 获取每行信息
+                if xx == '':
+                    if l==0:
+                        sheet6.write_merge(0, 0, 4, 10, '', style)
+                    elif l == 1:
+                        sheet6.write_merge(1, 1, 2, 6, '', style)
+                    else:
+                        sheet6.write_merge(2, 2, 2, 10, '', style)
+                    continue
+                else:
+                    if l==0:
+                        sheet6.write_merge(0, 0, 4, 10, xx, style)
+                    elif l == 1:
+                        sheet6.write_merge(1, 1, 2, 6, xx, style)
+                    else:
+                        sheet6.write_merge(2, 2, 2, 10, xx, style)
+
+        elif i == 1:
+            if list1[1] == 0:
+                if l == 1:
+                    sheet6.write_merge(3, 3, 2, 6, ' ', style)
+                else:
+                    sheet6.write_merge(3, 3, 8, 10, ' ', style)
+                continue
+            else:
+                for l in range(1, list4[i]):
+                    xx = sheet1.cell(list1[1], l).value  # 获取每行信息
+                    if xx == '':
+                        if l == 1:
+                            sheet6.write_merge(3, 3, 2, 6, ' ', style)
+                        else:
+                            sheet6.write_merge(3, 3, 8, 10, ' ', style)
+                    else:
+                        if l == 1:
+                            sheet6.write_merge(3, 3, 2, 6, xx, style)
+                        else:
+                            sheet6.write_merge(3, 3, 8, 10, xx, style)
+
+        elif i == 2:
+            if list1[2] == 0:
+                sheet6.write_merge(5, 5, 2, 10, '', style4)
+                continue
+            else:
+                for l in range(1, list4[i] ):
+                    xx = sheet2.cell(list1[2], l).value  # 获取每行信息
+                    if xx == '':
+                        sheet6.write_merge(5, 5, 2, 10, '', style4)
+                        continue
+                    else:
+                        sheet6.write_merge(5, 5, 2, 10, xx, style4)
+
+        elif i == 3:
+            if list1[3] == 0:
+                sheet6.write_merge(6, 6, 2, 10, '', style)
+                continue
+            else:
+                for l in range(1, list4[i]):
+                    xx = sheet3.cell(list1[3], l).value  # 获取每行信息
+                    if xx == '':
+                        sheet6.write_merge(6, 6, 2, 10, '', style)
+                        continue
+                    else:
+                        sheet6.write_merge(6, 6, 2, 10, xx, style)
+
+        else:
+            if list1[4] == 0:
+                sheet6.write_merge(7, 7, 2, 10, '', style)
+                continue
+            else:
+                for l in range(1, list4[i]):
+                    xx = sheet4.cell(list1[4], l).value  # 获取每行信息
+                    if xx == '':
+                        sheet6.write_merge(7, 7, 2, 10, '', style)
+                        continue
+                    else:
+                        sheet6.write_merge(7, 7, 2, 10, xx, style)
+
+    for l in range(0, len(list2)):
+        if list2[0] == 0:
+            break
+        else:
+            for cc in range(0,11):
+                xx = sheet5.cell(list2[l], cc).value
                 if xx == '':
                     continue
                 else:
-                    print(xx)
+                    sheet6.write(9+l, cc, xx, style2)
 
-
-
-'''
-    sheet1.write_merge(0, 0, 4, 10, "xx", style)
-    sheet1.write_merge(1, 1, 2, 6, "xx", style)
-    sheet1.write_merge(2, 2, 2, 10, "xx", style)
-    sheet1.write_merge(3, 3, 8, 10, "xx", style)
-    sheet1.write_merge(5, 5, 2, 10, "xx", style4)
-    sheet1.write_merge(6, 6, 2, 10, "xx", style)
-    sheet1.write_merge(7, 7, 2, 10, "xx", style)
+                
     #设置最后一行字段显示
     list1 = ["店号", "卡号", "姓名", "农行卡号", "职级", "职称", "市场业绩", "直接服务奖", "转货款", "应发服务费", "服务费发放状态"]
     for i in range(0, 11):
-        sheet1.write(8, i, list1[i], style2)
+        sheet6.write(8, i, list1[i], style2)
 
     # 设置1到3行的高度
     for i in range(0, 4):
         tall_style = xlwt.easyxf('font:height 216;')
-        first_row = sheet1.row(i)
+        first_row = sheet6.row(i)
         first_row.set_style(tall_style)
 
     tall_style = xlwt.easyxf('font:height 1056;')
-    first_row = sheet1.row(4)
+    first_row = sheet6.row(4)
     first_row.set_style(tall_style)
     tall_style = xlwt.easyxf('font:height 2416;')
-    first_row = sheet1.row(5)
+    first_row = sheet6.row(5)
     first_row.set_style(tall_style)
     tall_style = xlwt.easyxf('font:height 470;')
-    first_row = sheet1.row(6)
+    first_row = sheet6.row(6)
     first_row.set_style(tall_style)
     tall_style = xlwt.easyxf('font:height 470;')
-    first_row = sheet1.row(7)
+    first_row = sheet6.row(7)
     first_row.set_style(tall_style)
 
     # 设置列宽
     for i in range(0, 3):
-        first_col = sheet1.col(0)
+        first_col = sheet6.col(0)
         first_col.width = 256 * 8
 
-    first_col = sheet1.col(3)
+    first_col = sheet6.col(3)
     first_col.width = 256 * 23
-    first_col = sheet1.col(4)
+    first_col = sheet6.col(4)
     first_col.width = 256 * 10
-    first_col = sheet1.col(5)
+    first_col = sheet6.col(5)
     first_col.width = 256 * 14
-    first_col = sheet1.col(6)
+    first_col = sheet6.col(6)
     first_col.width = 256 * 11
-    first_col = sheet1.col(7)
+    first_col = sheet6.col(7)
     first_col.width = 256 * 11
-    first_col = sheet1.col(8)
+    first_col = sheet6.col(8)
     first_col.width = 256 * 11
-    first_col = sheet1.col(9)
+    first_col = sheet6.col(9)
     first_col.width = 256 * 11
-    first_col = sheet1.col(10)
+    first_col = sheet6.col(10)
     first_col.width = 256 * 18
 
-    workbook.save(r'D:\test.xls')  # 保存
-'''
+    file_name = 'D:\\zz\\table\\'+bzdh+'.xls'
+    workbook.save(file_name)  # 保存
 
-
+    print(1)
 
 if __name__ == '__main__':
     b1 = 1

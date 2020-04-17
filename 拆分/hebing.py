@@ -21,13 +21,15 @@ def xhs(dh,hs):
     # 找到每个表的行数，如有存在行数就追加到list1,如不存在，在list1中加0后到后一个表匹配的行数
     # b参数是记录每次查询到的位置
 
-    for a1 in range(b1,list3[1]):
-        cell_1 = sheet1.cell(a1, 0).value
+
+    for a1 in range(b1,list3[1]+1):
         # b参数等于表行数，就是匹配完数量了。后面再匹配的直接在list1中加0
-        if b1+1 == list3[1]:
+        len1 = list3[1]
+        if b1 == len1:
             list1.append(0)
             break
         else:
+            cell_1 = sheet1.cell(a1, 0).value
             # 前五个表有且最多只能存在一条数据，判断一次是否等于匹配值就可以
             if cell_1 != dh:
                 list1.append(0)
@@ -37,12 +39,13 @@ def xhs(dh,hs):
                 b1 = a1 + 1
                 break
 
-    for a2 in range(b2,list3[2]):
-        cell_2 = sheet2.cell(a2, 0).value
-        if b2+1 == list3[2]:
+    for a2 in range(b2,list3[2]+1):
+        len2 = list3[2]
+        if b2 == len2:
             list1.append(0)
             break
         else:
+            cell_2 = sheet2.cell(a2, 0).value
             if cell_2 != dh:
                 list1.append(0)
                 break
@@ -51,12 +54,14 @@ def xhs(dh,hs):
                 b2 = a2+1
                 break
 
-    for a3 in range(b3,list3[3]):
-        cell_3 = sheet3.cell(a3, 0).value
-        if b3+1 == list3[3]:
+
+    for a3 in range(b3,list3[3]+1):
+        len3 = list3[3]
+        if b3 == len3:
             list1.append(0)
             break
         else:
+            cell_3 = sheet3.cell(a3, 0).value
             if cell_3 != dh:
                 list1.append(0)
                 break
@@ -66,11 +71,12 @@ def xhs(dh,hs):
                 break
 
     for a4 in range(b4,list3[4]):
-        cell_4= sheet4.cell(a4, 0).value
-        if b4+1 == list3[4]:
+        len4 = list3[4]
+        if b4 == len4:
             list1.append(0)
             break
         else:
+            cell_4 = sheet4.cell(a4, 0).value
             if cell_4 != dh:
                 list1.append(0)
                 break
@@ -80,11 +86,12 @@ def xhs(dh,hs):
                 break
 
     for a in range(b5,list3[5]):
-        cell_5 = sheet5.cell(a, 0).value
-        if b5+1 == list3[5]:
+        len5 = list3[5]
+        if b5 == len5:
             list2.append(0)
             break
         else:
+            cell_5 = sheet5.cell(a, 0).value
             if cell_5 != dh:
                 if len(list2) >0:
                     break
@@ -95,6 +102,7 @@ def xhs(dh,hs):
                 list2.append(a)
                 b5 = a+1
     xr(list1,list2)
+
 
 
 #新建模板并写入数据
@@ -110,6 +118,7 @@ def xr(list1,list2):
     style2 = XFStyle()
     style3 = XFStyle()
     style4 = XFStyle()
+    style5 = XFStyle()
 
     # 设置边框
     borders = xlwt.Borders()
@@ -120,16 +129,18 @@ def xr(list1,list2):
     style.borders = borders
     style3.borders = borders
     style4.borders = borders
+    style5.borders = borders
 
-    # 设置对其al
+    # 设置对其al（居中）
     al = xlwt.Alignment()
     al.horz = 0x02  # 设置水平居中
     al.vert = 0x01  # 设置垂直居中
     style.alignment = al
     style2.alignment = al
     style4.alignment = al
+    style5.alignment = al
 
-    # 设置对其al1
+    # 设置对其al1（靠左）
     al1 = xlwt.Alignment()
     al1.horz = 0x01
     al1.vert = 0x01
@@ -143,8 +154,9 @@ def xr(list1,list2):
     fnt.bold = True
     fnt.height = 220
     style.font = fnt
+    style5.font = fnt
 
-    # 设置字体格式fnt1
+    # 设置字体格式fnt1（红色）
     fnt1 = Font()
     fnt1.name = u'宋体'
     fnt1.bold = True
@@ -152,13 +164,14 @@ def xr(list1,list2):
     fnt1.colour_index = 2
     style3.font = fnt1
 
-    # 设置字体格式fnt2
+    # 设置字体格式fnt2（蓝色）
     fnt2 = Font()
     fnt2.name = u'宋体'
     fnt2.bold = True
     fnt2.height = 220
     fnt2.colour_index = 4
     style4.font = fnt2
+    style5.font = fnt2
 
     # 写入数据
     sheet6.write_merge(0, 0, 0, 3, "专卖店编号：", style)
@@ -169,7 +182,7 @@ def xr(list1,list2):
     sheet6.write_merge(3, 3, 0, 1, "报单数量：", style)
     sheet6.write(3, 7, "报单额：", style)
     sheet6.write_merge(4, 4, 0, 10, a, style3)
-    sheet6.write_merge(5, 5, 0, 1, "备注：", style4)
+    sheet6.write_merge(5, 5, 0, 1, "备注：", style5)
     sheet6.write_merge(6, 6, 0, 1, "200元以下合计", style)
     sheet6.write_merge(7, 7, 0, 1, "店补合计", style)
 
@@ -181,7 +194,7 @@ def xr(list1,list2):
             #取出第一个sheet中店号作为文件名
             bzdh = sheet0.cell(list1[0], 0).value
             #循环表的行数
-            for l in range(0, list4[i] ):
+            for l in range(0, list4[0] ):
                 xx = sheet0.cell(list1[0], l).value  # 获取对应行的全部信息
                 #如果取值为空，就在对应的框填入空白，否则填入对应值
                 if xx == '':
@@ -211,7 +224,7 @@ def xr(list1,list2):
                 continue
             else:
                 #
-                for l in range(1, list4[i]):
+                for l in range(1, list4[1]):
                     xx = sheet1.cell(list1[1], l).value  # 获取对应行的全部信息
                     if xx == '':
                         if l == 1:
@@ -230,7 +243,7 @@ def xr(list1,list2):
                 sheet6.write_merge(5, 5, 2, 10, '', style4)
                 continue
             else:
-                for l in range(1, list4[i] ):
+                for l in range(1, list4[2] ):
                     xx = sheet2.cell(list1[2], l).value  # 获取对应行的全部信息
                     if xx == '':
                         sheet6.write_merge(5, 5, 2, 10, '', style4)
@@ -244,7 +257,7 @@ def xr(list1,list2):
                 sheet6.write_merge(6, 6, 2, 10, '', style)
                 continue
             else:
-                for l in range(1, list4[i]):
+                for l in range(1, list4[3]):
                     xx = sheet3.cell(list1[3], l).value  # 获取对应行的全部信息
                     if xx == '':
                         sheet6.write_merge(6, 6, 2, 10, '', style)
@@ -258,7 +271,7 @@ def xr(list1,list2):
                 sheet6.write_merge(7, 7, 2, 10, '', style)
                 continue
             else:
-                for l in range(1, list4[i]):
+                for l in range(1, list4[4]):
                     xx = sheet4.cell(list1[4], l).value # 获取对应行的全部信息
                     if xx == '':
                         sheet6.write_merge(7, 7, 2, 10, '', style)

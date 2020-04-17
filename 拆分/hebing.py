@@ -10,88 +10,99 @@ from xlwt import *
 '''
 
 #循环表
-def xhs(dh,hs):
-    global b1, b2, b3, b4, b5
-    global sheet1, sheet2, sheet3, sheet4, sheet5
+def xhs(dh):
+    global b0,b1, b2, b3, b4, b5
+    global sheet0,sheet1, sheet2, sheet3, sheet4, sheet5
     global list3,list4
     list1 =[] #存储匹配前五个表中对应数据的行数
     list2 =[]  # 存储匹配最后一个表中对应数据的行数
-    list1.append(hs) # 把第一个表中的行数添加到list1
 
     # 找到每个表的行数，如有存在行数就追加到list1,如不存在，在list1中加0后到后一个表匹配的行数
     # b参数是记录每次查询到的位置
 
+    for a0 in range(b0,list3[0]+1):
+        len0 = list3[0]
+        if b0 == len0:
+            list1.append(0)
+            break
+        elif a0 == len0-1:
+            list1.append(0)
+            break
+        else:
+            cell_0 = sheet0.cell(a0, 0).value
+            # 前五个表有且最多只能存在一条数据，判断一次是否等于匹配值就可以
+            if cell_0 == dh:
+                list1.append(a0)
+                b0 = a0+1
+                break
 
     for a1 in range(b1,list3[1]+1):
-        # b参数等于表行数，就是匹配完数量了。后面再匹配的直接在list1中加0
         len1 = list3[1]
-        if b1 == len1:
+        if a1 == len1:
+            list1.append(0)
+            break
+        elif b1 == len1:
             list1.append(0)
             break
         else:
             cell_1 = sheet1.cell(a1, 0).value
-            # 前五个表有且最多只能存在一条数据，判断一次是否等于匹配值就可以
-            if cell_1 != dh:
-                list1.append(0)
-                break
-            else:
+            if cell_1 == dh:
                 list1.append(a1)
-                b1 = a1 + 1
+                b1 = a1+1
                 break
 
     for a2 in range(b2,list3[2]+1):
         len2 = list3[2]
-        if b2 == len2:
+        if a2 == len2:
+            list1.append(0)
+            break
+        elif b2 == len2:
             list1.append(0)
             break
         else:
             cell_2 = sheet2.cell(a2, 0).value
-            if cell_2 != dh:
-                list1.append(0)
-                break
-            else:
+            if cell_2 == dh:
                 list1.append(a2)
-                b2 = a2+1
+                b2 = a2 + 1
                 break
-
 
     for a3 in range(b3,list3[3]+1):
         len3 = list3[3]
-        if b3 == len3:
+        if a3 == len3:
+            list1.append(0)
+            break
+        elif b3 == len3:
             list1.append(0)
             break
         else:
             cell_3 = sheet3.cell(a3, 0).value
-            if cell_3 != dh:
-                list1.append(0)
-                break
-            else:
+            if cell_3 == dh:
                 list1.append(a3)
                 b3 = a3+1
                 break
 
-    for a4 in range(b4,list3[4]):
+    for a4 in range(b4,list3[4]+1):
         len4 = list3[4]
-        if b4 == len4:
+        if a4 == len4:
+            list1.append(0)
+            break
+        elif b4 == len4:
             list1.append(0)
             break
         else:
             cell_4 = sheet4.cell(a4, 0).value
-            if cell_4 != dh:
-                list1.append(0)
-                break
-            else:
+            if cell_4 == dh:
                 list1.append(a4)
                 b4 = a4+1
                 break
 
-    for a in range(b5,list3[5]):
+    for a5 in range(b5,list3[5]):
         len5 = list3[5]
         if b5 == len5:
             list2.append(0)
             break
         else:
-            cell_5 = sheet5.cell(a, 0).value
+            cell_5 = sheet5.cell(a5, 0).value
             if cell_5 != dh:
                 if len(list2) >0:
                     break
@@ -99,15 +110,17 @@ def xhs(dh,hs):
                     list2.append(0)
                     break
             else:
-                list2.append(a)
-                b5 = a+1
-    xr(list1,list2)
+                list2.append(a5)
+                b5 = a5+1
+
+    xr(list1,list2,dh)
+
 
 
 
 #新建模板并写入数据
-def xr(list1,list2):
-    global style2
+def xr(list1,list2,dh):
+    global style2 ,cs
 
     a = "一、服务费清单发放说明：服务费清单只提供电子档一种格式，如需图片格式，可联系公司客服。\n二、服务费发放说明：服务费清单中应发服务费金额包含直接服务奖金额。\n三、服务费发放说明：服务费清单中增加“转货款”列，应发服务费金额已扣减转货款金额。"
     workbook = xlwt.Workbook(encoding='utf-8')
@@ -191,8 +204,6 @@ def xr(list1,list2):
     for i in range(0, len(list1)):
         #在第一个sheet中找数据并填入前三个需要填的值
         if i == 0:
-            #取出第一个sheet中店号作为文件名
-            bzdh = sheet0.cell(list1[0], 0).value
             #循环表的行数
             for l in range(0, list4[0] ):
                 xx = sheet0.cell(list1[0], l).value  # 获取对应行的全部信息
@@ -217,11 +228,9 @@ def xr(list1,list2):
         elif i == 1:
             # 如果list1中对应表中的值为0，说明该表中不存在匹配值的数据，就直接在对应的框填入空白
             if list1[1] == 0:
-                if l == 1:
                     sheet6.write_merge(3, 3, 2, 6, ' ', style)
-                else:
                     sheet6.write_merge(3, 3, 8, 10, ' ', style)
-                continue
+
             else:
                 #
                 for l in range(1, list4[1]):
@@ -291,7 +300,7 @@ def xr(list1,list2):
                 else:
                     sheet6.write(9+l, cc, xx, style2)
 
-                
+
     #设置最后一行字段显示
     list1 = ["店号", "卡号", "姓名", "农行卡号", "职级", "职称", "市场业绩", "直接服务奖", "转货款", "应发服务费", "服务费发放状态"]
     for i in range(0, 11):
@@ -338,17 +347,20 @@ def xr(list1,list2):
     first_col = sheet6.col(10)
     first_col.width = 256 * 18
 
-    file_name = 'D:\\zz\\table\\'+bzdh+'.xls'
+    file_name = 'D:\\zz\\table\\'+dh+'.xls'
     workbook.save(file_name)  # 保存
 
-    print(1)
+    cs =cs +1
+    print(cs)
 
 if __name__ == '__main__':
+    b0 = 1
     b1 = 1
     b2 = 1
     b3 = 1
     b4 = 1
     b5 = 1
+    cs = 0
     list3 = [] #存放每个表的行数
     list4 = []  # 存放每个表的列数
 
@@ -374,11 +386,16 @@ if __name__ == '__main__':
 
     dh1 = sheet0.cell(1, 2).value  # 获取每行店号
 
-    #循环第一个表中店号
-    for xhdh in range(1,list3[0]):
-        dh = sheet0.cell(xhdh, 0).value  #获取每行店号
-        #从第二个sheets开始循环sheets
-        xhs(dh, xhdh)
+    #循环服务费清单原始数据表中店号
+    for xhdh in range(0,list3[5]-1):
+        dh1 = sheet5.cell(xhdh, 0).value  #获取每行店号
+        dh2 = sheet5.cell(xhdh+1, 0).value
+        if dh1 != dh2:
+            xhs(dh2)
+        else:
+            continue
+
+
 
 
 

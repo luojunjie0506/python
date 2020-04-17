@@ -5,7 +5,7 @@ from xlwt import *
 前提：先把每个表中的数据按字母降序排序，这样每次匹配行数的时候会少执行很多次
 1.打开门店信息表，获取行数，循环行数，获取店号。
 1.1.用店号去匹配每个表中对应数据的行数（用字典或者列表存进来）
-1.2.复制模板后，用存起来的行数去查询对应表中的数据并写入复制的模板中并店号或名字保存
+1.2.增加写模板，用存起来的行数去查询对应表中的数据并写入复制的模板中并店号或名字保存
 2.再次执行前面步骤
 '''
 
@@ -16,14 +16,19 @@ def xhs(dh,hs):
     global list3,list4
     list1 =[] #存储匹配前五个表中对应数据的行数
     list2 =[]  # 存储匹配最后一个表中对应数据的行数
-    list1.append(hs)
+    list1.append(hs) # 把第一个表中的行数添加到list1
+
+    # 找到每个表的行数，如有存在行数就追加到list1,如不存在，在list1中加0后到后一个表匹配的行数
+    # b参数是记录每次查询到的位置
 
     for a1 in range(b1,list3[1]):
         cell_1 = sheet1.cell(a1, 0).value
+        # b参数等于表行数，就是匹配完数量了。后面再匹配的直接在list1中加0
         if b1+1 == list3[1]:
             list1.append(0)
             break
         else:
+            # 前五个表有且最多只能存在一条数据，判断一次是否等于匹配值就可以
             if cell_1 != dh:
                 list1.append(0)
                 break
@@ -92,6 +97,7 @@ def xhs(dh,hs):
     xr(list1,list2)
 
 
+#新建模板并写入数据
 def xr(list1,list2):
     global style2
 
@@ -99,6 +105,7 @@ def xr(list1,list2):
     workbook = xlwt.Workbook(encoding='utf-8')
     sheet6 = workbook.add_sheet("表格")  # 新建sheet
 
+    #新建样式
     style = XFStyle()
     style2 = XFStyle()
     style3 = XFStyle()
@@ -169,10 +176,14 @@ def xr(list1,list2):
 
     #从表中取值
     for i in range(0, len(list1)):
+        #在第一个sheet中找数据并填入前三个需要填的值
         if i == 0:
+            #取出第一个sheet中店号作为文件名
             bzdh = sheet0.cell(list1[0], 0).value
+            #循环表的行数
             for l in range(0, list4[i] ):
-                xx = sheet0.cell(list1[0], l).value  # 获取每行信息
+                xx = sheet0.cell(list1[0], l).value  # 获取对应行的全部信息
+                #如果取值为空，就在对应的框填入空白，否则填入对应值
                 if xx == '':
                     if l==0:
                         sheet6.write_merge(0, 0, 4, 10, '', style)
@@ -189,7 +200,9 @@ def xr(list1,list2):
                     else:
                         sheet6.write_merge(2, 2, 2, 10, xx, style)
 
+        # 在第二个sheet中找数据并填入4，5需要填的值
         elif i == 1:
+            # 如果list1中对应表中的值为0，说明该表中不存在匹配值的数据，就直接在对应的框填入空白
             if list1[1] == 0:
                 if l == 1:
                     sheet6.write_merge(3, 3, 2, 6, ' ', style)
@@ -197,8 +210,9 @@ def xr(list1,list2):
                     sheet6.write_merge(3, 3, 8, 10, ' ', style)
                 continue
             else:
+                #
                 for l in range(1, list4[i]):
-                    xx = sheet1.cell(list1[1], l).value  # 获取每行信息
+                    xx = sheet1.cell(list1[1], l).value  # 获取对应行的全部信息
                     if xx == '':
                         if l == 1:
                             sheet6.write_merge(3, 3, 2, 6, ' ', style)
@@ -210,45 +224,49 @@ def xr(list1,list2):
                         else:
                             sheet6.write_merge(3, 3, 8, 10, xx, style)
 
+        # 在第三个sheet中找数据并填入6需要填的值
         elif i == 2:
             if list1[2] == 0:
                 sheet6.write_merge(5, 5, 2, 10, '', style4)
                 continue
             else:
                 for l in range(1, list4[i] ):
-                    xx = sheet2.cell(list1[2], l).value  # 获取每行信息
+                    xx = sheet2.cell(list1[2], l).value  # 获取对应行的全部信息
                     if xx == '':
                         sheet6.write_merge(5, 5, 2, 10, '', style4)
                         continue
                     else:
                         sheet6.write_merge(5, 5, 2, 10, xx, style4)
 
+        # 在第四个sheet中找数据并填入7需要填的值
         elif i == 3:
             if list1[3] == 0:
                 sheet6.write_merge(6, 6, 2, 10, '', style)
                 continue
             else:
                 for l in range(1, list4[i]):
-                    xx = sheet3.cell(list1[3], l).value  # 获取每行信息
+                    xx = sheet3.cell(list1[3], l).value  # 获取对应行的全部信息
                     if xx == '':
                         sheet6.write_merge(6, 6, 2, 10, '', style)
                         continue
                     else:
                         sheet6.write_merge(6, 6, 2, 10, xx, style)
 
+        # 在第五个sheet中找数据并填入7需要填的值
         else:
             if list1[4] == 0:
                 sheet6.write_merge(7, 7, 2, 10, '', style)
                 continue
             else:
                 for l in range(1, list4[i]):
-                    xx = sheet4.cell(list1[4], l).value  # 获取每行信息
+                    xx = sheet4.cell(list1[4], l).value # 获取对应行的全部信息
                     if xx == '':
                         sheet6.write_merge(7, 7, 2, 10, '', style)
                         continue
                     else:
                         sheet6.write_merge(7, 7, 2, 10, xx, style)
 
+    # 在第六个sheet中找数据并填入
     for l in range(0, len(list2)):
         if list2[0] == 0:
             break

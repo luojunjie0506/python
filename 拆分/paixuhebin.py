@@ -6,20 +6,24 @@ import os
 
 
 
-path='D:\\c\\'
-file_list=os.listdir(path) #遍历文件夹中的所有文件
+path='D:\\zz\\'
+file_list=os.listdir(path) #获取文件夹中的所有文件名的列表
+writer = pd.ExcelWriter('D:\\xx.xls')  #使用ExcelWriter函数，可以写入数据时不会覆盖sheet
 
-'''
+#遍历文件夹中的所有文件名的列表
 for a  in file_list:
-    file_path = path + a
-    print(file_path)
+    file_path = path + a  #拼接完整路径
+    data = pd.read_excel(file_path, sheet_name=0) #读取文件夹中的表
+    df = pd.DataFrame(data) #转换格式
 
-    data = pd.read_excel(file_path, sheet_name=0)
-    df = pd.DataFrame(data)
-    df.sort_values('店号',ascending=True)
-'''
+    #循环每个表中表头的第一个字段，并用来排序
+    for btname  in data:
+        df.sort_values(by=btname, ascending=True, inplace=True)  #使用第一个字段来升序。ascending排序，inplace替代
+        df.to_excel(writer, encoding='utf-8', sheet_name=a[:-4],index=None) #写入sheet中 index无索引
+        writer.save()
+        writer.close()
+        print(a[:-4])
+        break
 
-data = pd.read_excel('D:\\c\\202004 店补发放.xlsx', sheet_name=0)
-df = pd.DataFrame(data)
-df.sort_values(by=['店号'],ascending=True,inplace=True)
-df.to_excel('D:\\a.xls',encoding='utf-8', index=False, header=False)
+
+

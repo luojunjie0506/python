@@ -4,7 +4,7 @@ import xlwt,xlrd
 from xlwt import *
 import os
 
-
+###门店信息中有数字的列表不能用来排序
 
 path='D:\\zz\\'
 file_list=os.listdir(path) #获取文件夹中的所有文件名的列表

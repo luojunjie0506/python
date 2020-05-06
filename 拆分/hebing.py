@@ -1,5 +1,6 @@
 import  xlrd,xlwt
 from xlwt import *
+import datetime
 
 '''
 前提：先把每个表中的数据按字母降序排序，这样每次匹配行数的时候会少执行很多次
@@ -11,7 +12,7 @@ from xlwt import *
 
 #循环表
 def xhs(dh):
-    global b0,b1, b2, b3, b4, b5
+    global b0,b1, b2, b3, b4, b5,ym
     global sheet0,sheet1, sheet2, sheet3, sheet4, sheet5
     global list3,list4
     list1 =[] #存储匹配前五个表中对应数据的行数
@@ -189,7 +190,7 @@ def xr(list1,list2,dh):
     sheet6.write_merge(0, 0, 0, 3, "专卖店编号：", style)
     sheet6.write_merge(1, 1, 0, 1, "店主姓名：", style)
     sheet6.write(1, 7, "月份：", style)
-    sheet6.write_merge(1, 1, 8, 10, "202003", style)
+    sheet6.write_merge(1, 1, 8, 10, ym, style)
     sheet6.write_merge(2, 2, 0, 1, "Email：", style)
     sheet6.write_merge(3, 3, 0, 1, "报单数量：", style)
     sheet6.write(3, 7, "报单额：", style)
@@ -363,15 +364,23 @@ if __name__ == '__main__':
     list3 = [] #存放每个表的行数
     list4 = []  # 存放每个表的列数
 
-    file = 'D:\\zz\\sad.xls'
+    #获取当前月份-1
+    year = datetime.datetime.now().year
+    month = datetime.datetime.now().month
+    if month <10:
+        ym = str(year) +'0'+ str(month-1)
+    else:
+        ym = str(year) + str(month - 1)
+
+    file = 'D:\\zz\\cc1.xls'
     data = xlrd.open_workbook(file)
     #打开sheet表
-    sheet0 = data.sheets()[0]
-    sheet1 = data.sheets()[1]
-    sheet2 = data.sheets()[2]
-    sheet3 = data.sheets()[3]
-    sheet4 = data.sheets()[4]
-    sheet5 = data.sheets()[5]
+    sheet0 = data.sheets()[0] #门店信息表
+    sheet1 = data.sheets()[1] #业绩汇总表
+    sheet2 = data.sheets()[2] #补扣款备注
+    sheet3 = data.sheets()[3] #200元以下合计
+    sheet4 = data.sheets()[4] #店补发放
+    sheet5 = data.sheets()[5] #服务费清单原始数据
 
     #获取每表的行数
     for i in range(0,6):
@@ -384,7 +393,7 @@ if __name__ == '__main__':
         list4.append(cols)
 
     dh1 = sheet0.cell(1, 2).value  # 获取每行店号
-
+    
     #循环服务费清单原始数据表中店号
     for xhdh in range(0,list3[5]-1):
         dh1 = sheet5.cell(xhdh, 0).value  #获取每行店号

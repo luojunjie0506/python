@@ -392,7 +392,6 @@ if __name__ == '__main__':
         cols = data.sheets()[i].ncols
         list4.append(cols)
 
-    dh1 = sheet0.cell(1, 2).value  # 获取每行店号
     
     #循环服务费清单原始数据表中店号
     for xhdh in range(0,list3[5]-1):

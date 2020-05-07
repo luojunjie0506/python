@@ -25,10 +25,8 @@ def xhs(dh):
     # b参数是记录每次查询到的位置
     for a0 in range(b0, list3[0] + 1):
         len0 = list3[0]
+        #b的位置跟长度相等时，说明表中数据一匹配完，直接在list1中加1
         if b0 == len0:
-            list1.append(0)
-            break
-        elif a0 == len0 - 1:
             list1.append(0)
             break
         else:
@@ -44,9 +42,6 @@ def xhs(dh):
         if a1 == len1:
             list1.append(0)
             break
-        elif b1 == len1:
-            list1.append(0)
-            break
         else:
             cell_1 = sheet1.cell(a1, 0).value
             if cell_1 == dh:
@@ -57,9 +52,6 @@ def xhs(dh):
     for a2 in range(b2, list3[2] + 1):
         len2 = list3[2]
         if a2 == len2:
-            list1.append(0)
-            break
-        elif b2 == len2:
             list1.append(0)
             break
         else:
@@ -74,9 +66,6 @@ def xhs(dh):
         if a3 == len3:
             list1.append(0)
             break
-        elif b3 == len3:
-            list1.append(0)
-            break
         else:
             cell_3 = sheet3.cell(a3, 0).value
             if cell_3 == dh:
@@ -87,9 +76,6 @@ def xhs(dh):
     for a4 in range(b4, list3[4] + 1):
         len4 = list3[4]
         if a4 == len4:
-            list1.append(0)
-            break
-        elif b4 == len4:
             list1.append(0)
             break
         else:

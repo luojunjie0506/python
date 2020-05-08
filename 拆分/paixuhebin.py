@@ -287,9 +287,9 @@ def xr(list1, list2, dh):
                     sheet6.write(9 + l, cc, xx, style2)
 
     # 设置最后一行字段显示
-    list1 = ["店号", "卡号", "姓名", "农行卡号", "职级", "职称", "市场业绩", "直接服务奖", "转货款", "应发服务费", "服务费发放状态"]
+    list_last = ["店号", "卡号", "姓名", "农行卡号", "职级", "职称", "市场业绩", "直接服务奖", "转货款", "应发服务费", "服务费发放状态"]
     for i in range(0, 11):
-        sheet6.write(8, i, list1[i], style2)
+        sheet6.write(8, i, list_last[i], style2)
 
     # 设置1到3行的高度
     for i in range(0, 4):

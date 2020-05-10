@@ -1,8 +1,9 @@
-import  pandas as pd
+import pandas as pd
 import os
 import xlrd, xlwt
 from xlwt import *
 import datetime
+from xlutils.copy import copy
 
 '''
 前提：先把每个表中的数据按字母降序排序，这样每次匹配行数的时候会少执行很多次
@@ -25,7 +26,7 @@ def xhs(dh):
     # b参数是记录每次查询到的位置
     for a0 in range(b0, list3[0] + 1):
         len0 = list3[0]
-        #b的位置跟长度相等时，说明表中数据一匹配完，直接在list1中加1
+        # b的位置跟长度相等时，说明表中数据一匹配完，直接在list1中加1
         if b0 == len0:
             list1.append(0)
             break
@@ -107,16 +108,16 @@ def xhs(dh):
 
 # 新建模板并写入数据
 def xr(list1, list2, dh):
-    global style2, cs
+    global cs
 
-    a = "一、服务费清单发放说明：服务费清单只提供电子档一种格式，如需图片格式，可联系公司客服。\n二、服务费发放说明：服务费清单中应发服务费金额包含直接服务奖金额。\n三、服务费发放说明：服务费清单中增加“转货款”列，应发服务费金额已扣减转货款金额。"
-    workbook = xlwt.Workbook(encoding='utf-8')
-    sheet6 = workbook.add_sheet("表格")  # 新建sheet
+    #复制模板并写入数据保存
+    oldWb = xlrd.open_workbook('D:\\fuwufei\\模板.xls',formatting_info=True);  # 先打开已存在的表
+    newWb = copy(oldWb)  # 复制
+    sheet6 = newWb.get_sheet(0);  # 取sheet表
 
     # 新建样式
     style = XFStyle()
     style2 = XFStyle()
-    style3 = XFStyle()
     style4 = XFStyle()
     style5 = XFStyle()
 
@@ -127,7 +128,6 @@ def xr(list1, list2, dh):
     borders.top = xlwt.Borders.THIN
     borders.bottom = xlwt.Borders.THIN
     style.borders = borders
-    style3.borders = borders
     style4.borders = borders
     style5.borders = borders
 
@@ -145,7 +145,6 @@ def xr(list1, list2, dh):
     al1.horz = 0x01
     al1.vert = 0x01
     al1.wrap = 1  # 设置自动换行
-    style3.alignment = al1
     style4.alignment = al1
 
     # 设置字体格式fnt
@@ -162,7 +161,6 @@ def xr(list1, list2, dh):
     fnt1.bold = True
     fnt1.height = 220
     fnt1.colour_index = 2
-    style3.font = fnt1
 
     # 设置字体格式fnt2（蓝色）
     fnt2 = Font()
@@ -173,18 +171,8 @@ def xr(list1, list2, dh):
     style4.font = fnt2
     style5.font = fnt2
 
-    # 写入数据
-    sheet6.write_merge(0, 0, 0, 3, "专卖店编号：", style)
-    sheet6.write_merge(1, 1, 0, 1, "店主姓名：", style)
-    sheet6.write(1, 7, "月份：", style)
-    sheet6.write_merge(1, 1, 8, 10, ym, style)
-    sheet6.write_merge(2, 2, 0, 1, "Email：", style)
-    sheet6.write_merge(3, 3, 0, 1, "报单数量：", style)
-    sheet6.write(3, 7, "报单额：", style)
-    sheet6.write_merge(4, 4, 0, 10, a, style3)
-    sheet6.write_merge(5, 5, 0, 1, "备注：", style5)
-    sheet6.write_merge(6, 6, 0, 1, "200元以下合计", style)
-    sheet6.write_merge(7, 7, 0, 1, "店补合计", style)
+    #写入月份
+    sheet6.write(1,8,  ym, style)
 
     # 从表中取值
     for i in range(0, len(list1)):
@@ -196,26 +184,27 @@ def xr(list1, list2, dh):
                 # 如果取值为空，就在对应的框填入空白，否则填入对应值
                 if xx == '':
                     if l == 0:
-                        sheet6.write_merge(0, 0, 4, 10, '', style)
+                        sheet6.write(0, 4, '',style)
                     elif l == 1:
-                        sheet6.write_merge(1, 1, 2, 6, '', style)
+                        sheet6.write(1, 2, '',style)
                     else:
-                        sheet6.write_merge(2, 2, 2, 10, '', style)
+                        sheet6.write(2, 2, '',style)
                     continue
                 else:
                     if l == 0:
-                        sheet6.write_merge(0, 0, 4, 10, xx, style)
+                        sheet6.write(0, 4, xx,style)
                     elif l == 1:
-                        sheet6.write_merge(1, 1, 2, 6, xx, style)
+                        sheet6.write(1, 2, xx,style)
                     else:
-                        sheet6.write_merge(2, 2, 2, 10, xx, style)
+                        sheet6.write(2, 2, xx,style)
+
 
         # 在第二个sheet中找数据并填入4，5需要填的值
         elif i == 1:
             # 如果list1中对应表中的值为0，说明该表中不存在匹配值的数据，就直接在对应的框填入空白
             if list1[1] == 0:
-                sheet6.write_merge(3, 3, 2, 6, ' ', style)
-                sheet6.write_merge(3, 3, 8, 10, ' ', style)
+                sheet6.write(3, 2, ' ', style)
+                sheet6.write(3, 8, ' ', style)
 
             else:
                 #
@@ -223,56 +212,56 @@ def xr(list1, list2, dh):
                     xx = sheet1.cell(list1[1], l).value  # 获取对应行的全部信息
                     if xx == '':
                         if l == 1:
-                            sheet6.write_merge(3, 3, 2, 6, ' ', style)
+                            sheet6.write(3, 2,' ', style)
                         else:
-                            sheet6.write_merge(3, 3, 8, 10, ' ', style)
+                            sheet6.write(3, 8, ' ', style)
                     else:
                         if l == 1:
-                            sheet6.write_merge(3, 3, 2, 6, xx, style)
+                            sheet6.write(3,  2,  xx, style)
                         else:
-                            sheet6.write_merge(3, 3, 8, 10, xx, style)
+                            sheet6.write(3, 8,  xx, style)
 
         # 在第三个sheet中找数据并填入6需要填的值
         elif i == 2:
             if list1[2] == 0:
-                sheet6.write_merge(5, 5, 2, 10, '', style4)
+                sheet6.write( 5, 2,  '', style4)
                 continue
             else:
                 for l in range(1, list4[2]):
                     xx = sheet2.cell(list1[2], l).value  # 获取对应行的全部信息
                     if xx == '':
-                        sheet6.write_merge(5, 5, 2, 10, '', style4)
+                        sheet6.write( 5, 2,  '', style4)
                         continue
                     else:
-                        sheet6.write_merge(5, 5, 2, 10, xx, style4)
+                        sheet6.write(5,  2,  xx, style4)
 
         # 在第四个sheet中找数据并填入7需要填的值
         elif i == 3:
             if list1[3] == 0:
-                sheet6.write_merge(6, 6, 2, 10, '', style)
+                sheet6.write(6, 2,  '', style)
                 continue
             else:
                 for l in range(1, list4[3]):
                     xx = sheet3.cell(list1[3], l).value  # 获取对应行的全部信息
                     if xx == '':
-                        sheet6.write_merge(6, 6, 2, 10, '', style)
+                        sheet6.write(6, 2, '', style)
                         continue
                     else:
-                        sheet6.write_merge(6, 6, 2, 10, xx, style)
+                        sheet6.write( 6, 2,  xx, style)
 
         # 在第五个sheet中找数据并填入7需要填的值
         else:
             if list1[4] == 0:
-                sheet6.write_merge(7, 7, 2, 10, '', style)
+                sheet6.write(7, 2,  '', style)
                 continue
             else:
                 for l in range(1, list4[4]):
                     xx = sheet4.cell(list1[4], l).value  # 获取对应行的全部信息
                     if xx == '':
-                        sheet6.write_merge(7, 7, 2, 10, '', style)
+                        sheet6.write(7, 2,  '', style)
                         continue
                     else:
-                        sheet6.write_merge(7, 7, 2, 10, xx, style)
+                        sheet6.write(7, 2, xx, style)
 
     # 在第六个sheet中找数据并填入
     for l in range(0, len(list2)):
@@ -286,54 +275,9 @@ def xr(list1, list2, dh):
                 else:
                     sheet6.write(9 + l, cc, xx, style2)
 
-    # 设置最后一行字段显示
-    list_last = ["店号", "卡号", "姓名", "农行卡号", "职级", "职称", "市场业绩", "直接服务奖", "转货款", "应发服务费", "服务费发放状态"]
-    for i in range(0, 11):
-        sheet6.write(8, i, list_last[i], style2)
 
-    # 设置1到3行的高度
-    for i in range(0, 4):
-        tall_style = xlwt.easyxf('font:height 216;')
-        first_row = sheet6.row(i)
-        first_row.set_style(tall_style)
-
-    tall_style = xlwt.easyxf('font:height 1056;')
-    first_row = sheet6.row(4)
-    first_row.set_style(tall_style)
-    tall_style = xlwt.easyxf('font:height 2416;')
-    first_row = sheet6.row(5)
-    first_row.set_style(tall_style)
-    tall_style = xlwt.easyxf('font:height 470;')
-    first_row = sheet6.row(6)
-    first_row.set_style(tall_style)
-    tall_style = xlwt.easyxf('font:height 470;')
-    first_row = sheet6.row(7)
-    first_row.set_style(tall_style)
-
-    # 设置列宽
-    for i in range(0, 3):
-        first_col = sheet6.col(0)
-        first_col.width = 256 * 8
-
-    first_col = sheet6.col(3)
-    first_col.width = 256 * 23
-    first_col = sheet6.col(4)
-    first_col.width = 256 * 10
-    first_col = sheet6.col(5)
-    first_col.width = 256 * 14
-    first_col = sheet6.col(6)
-    first_col.width = 256 * 11
-    first_col = sheet6.col(7)
-    first_col.width = 256 * 11
-    first_col = sheet6.col(8)
-    first_col.width = 256 * 11
-    first_col = sheet6.col(9)
-    first_col.width = 256 * 11
-    first_col = sheet6.col(10)
-    first_col.width = 256 * 18
-
-    file_name = 'D:\\zz\\table\\' + dh + '.xls'
-    workbook.save(file_name)  # 保存
+    file_name = 'D:\\fuwufei\\table\\' + dh + '.xls'
+    newWb.save(file_name)  # 保存
 
     cs = cs + 1
     print(cs)
@@ -350,8 +294,7 @@ if __name__ == '__main__':
     list3 = []  # 存放每个表的行数
     list4 = []  # 存放每个表的列数
     sheets_list = []  # 存放合并后的sheet名列表
-    save_path='D:\\fuwufei\\xx.xls' #合并后excel的存放路径
-
+    save_path = 'D:\\fuwufei\\xx.xls'  # 合并后excel的存放路径
 
     # 获取当前月份-1
     year = datetime.datetime.now().year
@@ -361,7 +304,7 @@ if __name__ == '__main__':
     else:
         ym = str(year) + str(month - 1)
 
-    #整合排序多个excel的多个sheet为一个excel的多个sheet
+    # 整合排序多个excel的多个sheet为一个excel的多个sheet
     ##门店信息中有数字框要设置为文本格式
     path = 'D:\\fuwufei\\c\\'
     file_list = os.listdir(path)  # 获取文件夹中的所有文件名的列表
@@ -383,10 +326,9 @@ if __name__ == '__main__':
 
     print(sheets_list)
 
-
     data = xlrd.open_workbook(save_path)
     # 按顺序打开各个sheet表并获取行列
-    for num in range(0,len(sheets_list)):
+    for num in range(0, len(sheets_list)):
         for sheet_list in sheets_list:
             if ('门店信息' in sheet_list) and num == 0:
                 sheet0 = data.sheet_by_name(sheet_list)
@@ -423,7 +365,7 @@ if __name__ == '__main__':
                 list3.append(rows)
                 list4.append(cols)
                 break
-            elif ('服务费清单原始数据' in sheet_list) and num ==5:
+            elif ('服务费清单原始数据' in sheet_list) and num == 5:
                 sheet5 = data.sheet_by_name(sheet_list)
                 rows = sheet5.nrows
                 cols = sheet5.ncols
@@ -431,9 +373,7 @@ if __name__ == '__main__':
                 list4.append(cols)
                 break
 
-    print(list3,list4)
-
-
+    print(list3, list4)
 
     # 循环服务费清单原始数据表中店号
     for xhdh in range(0, list3[5] - 1):

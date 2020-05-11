@@ -111,9 +111,9 @@ def xr(list1, list2, dh):
     global cs
 
     #复制模板并写入数据保存
-    oldWb = xlrd.open_workbook('D:\\fuwufei\\模板.xls',formatting_info=True);  # 先打开已存在的表
+    oldWb = xlrd.open_workbook('D:\\fuwufei\\模板.xls',formatting_info=True)  # 先打开已存在的表
     newWb = copy(oldWb)  # 复制
-    sheet6 = newWb.get_sheet(0);  # 取sheet表
+    sheet6 = newWb.get_sheet(0)  # 取sheet表
 
     # 新建样式
     style = XFStyle()

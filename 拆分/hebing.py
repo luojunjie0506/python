@@ -16,7 +16,7 @@ from xlutils.copy import copy
 
 # 循环表
 def xhs(dh):
-    global b0, b1, b2, b3, b4, b5, ym
+    global b0, b1, b2, b3, b4, b5, ym,dir_path
     global sheet0, sheet1, sheet2, sheet3, sheet4, sheet5
     global list3, list4
     list1 = []  # 存储匹配前五个表中对应数据的行数
@@ -276,7 +276,7 @@ def xr(list1, list2, dh):
                     sheet6.write(9 + l, cc, xx, style2)
 
 
-    file_name = 'D:\\fuwufei\\table\\' + dh + '.xls'
+    file_name = dir_path + '\\'+ dh + '.xls'
     newWb.save(file_name)  # 保存
 
     cs = cs + 1
@@ -304,6 +304,10 @@ if __name__ == '__main__':
     else:
         ym = str(year) + str(month - 1)
 
+    #创建文件夹存放各店信息
+    dir_path = 'D:\\fuwufei\\' + ym + '服务费清单'
+    os.mkdir(dir_path)
+
     # 整合排序多个excel的多个sheet为一个excel的多个sheet
     ##门店信息中有数字框要设置为文本格式
     path = 'D:\\fuwufei\\c\\'
@@ -317,7 +321,11 @@ if __name__ == '__main__':
 
         # 循环每个表中表头的第一个字段，并用来排序
         for btname in data:
-            df.sort_values(by=btname, ascending=True, inplace=True)  # 使用第一个字段来升序。ascending排序，inplace替代
+            #判断表是否是服务费清单原始数据表，是的话就要表中第一个字段和顺序字段排列
+            if '原始数据' in a:
+                df.sort_values(by=[btname, '顺序'], ascending=True, inplace=True)  # 使用第一个字段来升序。ascending排序，inplace替代
+            else:
+                df.sort_values(by=btname, ascending=True, inplace=True)  # 使用第一个字段来升序。ascending排序，inplace替代
             df.to_excel(writer, encoding='utf-8', sheet_name=a[:-5], index=None)  # 写入sheet中 index无索引
             writer.save()
             writer.close()
@@ -383,5 +391,7 @@ if __name__ == '__main__':
             xhs(dh2)
         else:
             continue
+
+
 
 

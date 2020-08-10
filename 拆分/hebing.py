@@ -268,7 +268,7 @@ def xr(list1, list2, dh):
         if list2[0] == 0:
             break
         else:
-            for cc in range(0, 11):
+            for cc in range(0, list4[5]-1):
                 xx = sheet5.cell(list2[l], cc).value
                 if xx == '':
                     continue

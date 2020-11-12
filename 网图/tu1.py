@@ -36,29 +36,28 @@ def xh(zz):
         name = zh(date.loc[[i], [2]])  # 姓名
         age = zh(date.loc[[i], [4]])  # 年龄
         sex = zh(date.loc[[i], [5]])  # 性别
-        leg = zh(date.loc[[i], [10]]) #月均2.8万业绩leg数
-        qg = zh(date.loc[[i], [9]]) #2020年业绩（切割）
+        leg = zh(date.loc[[i], [11]]) #月均2.8万业绩leg数
+        qg = zh(date.loc[[i], [10]]) #2020年业绩（切割）
         bqg = zh(date.loc[[i], [6]]) #19年业绩
-        tjr = zh(date.loc[[i], [11]]) #紧急联系人卡号
+        tjr = zh(date.loc[[i], [12]]) #紧急联系人卡号
         dhe = zh(date.loc[[i], [7]]) #2020年1-10月业绩
         fwf = zh(date.loc[[i], [8]]) #2020年月平均服务费
+        ov = zh(date.loc[[i], [9]])  # 2020年累计OV业绩
 
         #取第一层
         if hy == cc and js ==1:
-            A = zw + ' - ' + hy + name + '\n' + '年龄:' + str(age) + ' 性别:' + sex + '\n' + '月均2.8万业绩leg数:' + str(leg) + '\n' + '2020年业绩(切割):' + str(
-                '%.1f' % (qg/10000))  + '万\n'+ '2020年1-10月业绩:' + str('%.1f' % (dhe/10000)) + '万\n' + '2020月平均服务费:' + str(
-                '%.1f' % (fwf/10000)) + '万\n'+ '2019年业绩:' + str('%.1f' % (bqg/10000)) + '万\n'
-            if sex =="男":
-                dot.node(hy, A, fontname="SimHei", color='LightSkyBlue')
-            else:
-                dot.node(hy, A, fontname="SimHei", color='Pink')
+            A = name
+            dot.node(hy, A, fontname="SimHei", color='LightSkyBlue',fontsize="30")
             filename = zw
         # 查询每层符合条件的人
         if tjr in zz:
             #网图每个框显示的内容
             B =  zw + ' - ' + hy + name + '\n' + '年龄:' + str(age) + ' 性别:' + sex + '\n' + '月均2.8万业绩leg数:' + str(leg) + '\n' + '2020年业绩(切割):' + str(
-                '%.1f' % (qg/10000))  + '万\n'+ '2020年1-10月业绩:' + str('%.1f' % (dhe/10000)) + '万\n' + '2020月平均服务费:' + str(
-                '%.1f' % (fwf/10000)) + '万\n'+ '2019年业绩:' + str('%.1f' % (bqg/10000)) + '万\n'
+                '%.1f' % (qg/10000))  + '万\n'+ '2020年累计OV业绩:' + str('%.1f' % (ov/10000)) + '万\n' + '2020月平均服务费:' + str(
+                '%.1f' % (fwf/10000)) + '万\n'+ '2019年订货额:' + str('%.1f' % (bqg/10000)) + '万\n'
+            # B =  zw + ' - ' + hy + name + '\n' + '年龄:' + str(age) + ' 性别:' + sex + '\n' + '月均2.8万业绩leg数:' + str(leg) + '\n' + '2020年业绩(切割):' + str(
+            #     '%.1f' % (qg/10000))  + '万\n'+ '2020年1-10月订货额:' + str('%.1f' % (dhe/10000)) + '万\n' + '2020月平均服务费:' + str(
+            #     '%.1f' % (fwf/10000)) + '万\n'+ '2019年订货额:' + str('%.1f' % (bqg/10000)) + '万\n'
             f.append(hy)
             #绘制整个网图
             if sex =="男":
@@ -73,7 +72,7 @@ def xh(zz):
     print(f,zz)
     #判断
     if len(f) == 0:
-        dot.render('test-output/' + filename + '.gv', view=True)
+        dot.render('test-output/' + filename , view=True)
     else:
         js = js + 1
         print(js)
@@ -82,9 +81,9 @@ def xh(zz):
 
 filename =''
 # cc = input('请输入要查询的卡号:')
-cc = '0041213'
+cc = '555555'
 # dd = input('请输入你的文件名(存储在D盘根目录):')
-dd='2021年咨委备选人员调取数据_20201111.xlsx'
+dd='2021年咨委备选人员调取数据（任意6个月+80万）_20201112.xlsx'
 path = path +dd
 #打开excel
 date = pd.read_excel(path,header=None)

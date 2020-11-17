@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from graphviz import Digraph
 
-11
+num = 0
 path = 'D:\\'  #文档路径
 js = 1   #层数
 a = 0
@@ -18,7 +18,7 @@ def zh(aa):
             return j
 
 def xh(zz):
-    global js,a,filename
+    global js,a,filename,num
     f = []
     #循环表头
     bt = date.ix[0].values
@@ -37,14 +37,15 @@ def xh(zz):
         name = zh(date.loc[[i], [2]])  # 姓名
         age = zh(date.loc[[i], [5]])  # 年龄
         sex = zh(date.loc[[i], [6]])  # 性别
-        leg = zh(date.loc[[i], [12]]) #月均2.8万业绩leg数
+        leg = zh(date.loc[[i], [14]]) #月均2.8万业绩leg数
         qg = zh(date.loc[[i], [11]]) #2020年业绩（切割）
         bqg = zh(date.loc[[i], [7]]) #19年业绩
-        tjr = zh(date.loc[[i], [13]]) #紧急联系人卡号
+        tjr = zh(date.loc[[i], [15]]) #紧急联系人卡号
         dhe = zh(date.loc[[i], [8]]) #2020年1-10月业绩
         fwf = zh(date.loc[[i], [9]]) #2020年月平均服务费
         ov = zh(date.loc[[i], [10]])  # 2020年累计OV业绩
-
+        ov_2019 = zh(date.loc[[i], [12]]) # 2019年累计OV业绩
+        qg_2019 = zh(date.loc[[i], [13]]) #2019年业绩（切割
         #取第一层
         if hy == cc and js ==1:
             A = name
@@ -55,7 +56,7 @@ def xh(zz):
             #网图每个框显示的内容
             B =  zw + ' - ' + hy + name + '\n' + '年龄:' + str(age) + ' 性别:' + sex + '\n' + '月均2.8万业绩leg数:' + str(leg) + '\n' + '2020年业绩(切割):' + str(
                 '%.1f' % (qg/10000))  + '万\n'+ '2020年累计OV业绩:' + str('%.1f' % (ov/10000)) + '万\n' + '2020月平均服务费:' + str(
-                '%.1f' % (fwf/10000)) + '万\n'+ '2019年订货额:' + str('%.1f' % (bqg/10000)) + '万\n'
+                '%.1f' % (fwf/10000)) + '万\n'+ '2019年业绩(切割):' + str('%.1f' % (qg_2019/10000)) + '万\n'+ '2019年累计OV业绩:' + str('%.1f' % (ov_2019/10000)) + '万\n'
             # B =  zw + ' - ' + hy + name + '\n' + '年龄:' + str(age) + ' 性别:' + sex + '\n' + '月均2.8万业绩leg数:' + str(leg) + '\n' + '2020年业绩(切割):' + str(
             #     '%.1f' % (qg/10000))  + '万\n'+ '2020年1-10月订货额:' + str('%.1f' % (dhe/10000)) + '万\n' + '2020月平均服务费:' + str(
             #     '%.1f' % (fwf/10000)) + '万\n'+ '2019年订货额:' + str('%.1f' % (bqg/10000)) + '万\n'
@@ -74,6 +75,7 @@ def xh(zz):
                 dot.node(hy, B, fontname="SimHei",color ='Pink')
                 dot.edge(tjr, hy)
 
+    num = num + len(f)
     print(f,zz)
     #判断
     if len(f) == 0:
@@ -83,8 +85,8 @@ def xh(zz):
         dot.node( '咨委', fontname="SimHei", color="LightSkyBlue", fontsize="30")
         dot.node( '执委', fontname="SimHei", color="PeachPuff", fontsize="30")
         dot.node( '骨干', fontname="SimHei", color="Pink", fontsize="30")
-
         dot.render('test-output/' + filename , view=True)
+        print(num)
     else:
         js = js + 1
         print(js)
@@ -93,9 +95,9 @@ def xh(zz):
 
 filename =''
 # cc = input('请输入要查询的卡号:')
-cc = '12345678'
+cc = '555555'
 # dd = input('请输入你的文件名(存储在D盘根目录):')
-dd='11111.xlsx'
+dd='222.xlsx'
 path = path +dd
 #打开excel
 date = pd.read_excel(path,header=None)

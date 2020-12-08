@@ -24,7 +24,7 @@ def xhs(dh):
 
     # 找到每个表的行数，如有存在行数就追加到list1,如不存在，在list1中加0后到后一个表匹配的行数
     # b参数是记录每次查询到的位置
-    for a0 in range(b0, list3[0] ):
+    for a0 in range(b0, list3[0]):
         len0 = list3[0]
         # b的位置跟长度相等时，说明表中数据一匹配完，直接在list1中加1
         if b0 == len0:

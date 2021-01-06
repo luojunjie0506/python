@@ -299,7 +299,9 @@ if __name__ == '__main__':
     # 获取当前月份-1
     year = datetime.datetime.now().year
     month = datetime.datetime.now().month
-    if month < 10:
+    if month == 1:
+        ym = str(year-1) + '12'
+    elif 1< month < 10:
         ym = str(year) + '0' + str(month - 1)
     else:
         ym = str(year) + str(month - 1)

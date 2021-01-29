@@ -4,13 +4,17 @@ import openpyxl
 import os
 import pandas as pd
 import xlrd
+from openpyxl import *
 from openpyxl.utils import get_column_letter
+
 
 def getmonth():
     # 获取当前月份-1
     year = datetime.datetime.now().year
     month = datetime.datetime.now().month
-    if month < 10:
+    if month ==1 :
+        ym = str(year-1) + str(12)
+    elif month < 10:
         ym = str(year) + '0' + str(month - 1)
     else:
         ym = str(year) + str(month - 1)
@@ -44,6 +48,110 @@ def zhenghe():
             break
     print(sheets_list)
     return save_path
+
+def xhs(dh):
+    global b0, b1, b2, b3, b4
+    global sheet0, sheet1, sheet2, sheet3, sheet4
+    global row_list, col_list
+    # '202012 服务费清单原始数据','202012 门店信息表', '202012 小微店补', '202012 补扣款备注',  '202012 活动明细表'
+    list1 = []  # 存储匹配服务费清单原始数据
+    list2 = []  # 存储匹配补扣款备注,小微店补,门店信息表
+    list3 = []  # 存储匹配活动明细表
+
+    # 找到每个表的行数，如有存在行数就追加到list1,如不存在，在list1中加0后到后一个表匹配的行数
+    # b参数是记录每次查询到的位置
+    for a0 in range(b0, row_list[0]):
+        mh0 = []
+        # b的位置跟长度相等时，说明表中数据一匹配完，直接在list中加0
+        if a0 == row_list[0]:
+            break
+        else:
+            cell_0 = sheet0.cell(a0, 0).value
+            if cell_0 != dh:
+                break
+            else:
+                for index in range(0,col_list[0]):
+                    value_0 = sheet0.cell(a0, index).value
+                    mh0.append(value_0)
+                list1.append(mh0)
+                b0 = a0 + 1
+
+    for a1 in range(b1, row_list[1] + 1):
+        if a1 == row_list[1]:
+            list2.append('')
+            break
+        else:
+            cell_1 = sheet1.cell(a1, 0).value
+            if cell_1 == dh:
+                for index in range(0,col_list[1]):
+                    value_1 = sheet1.cell(a1, index).value
+                    list2.append(value_1)
+                b1 = a1 + 1
+                break
+
+    for a2 in range(b2, row_list[2] + 1):
+        if a2 == row_list[2]:
+            list2.append('')
+            break
+        else:
+            cell_2 = sheet2.cell(a2, 0).value
+            if cell_2 == dh:
+                value_2 = sheet2.cell(a2, 2).value
+                list2.append(value_2)
+                b2 = a2 + 1
+                break
+
+    for a3 in range(b3, row_list[3] + 1):
+        if a3 == row_list[3]:
+            list2.append('')
+            break
+        else:
+            cell_3 = sheet3.cell(a3, 0).value
+            if cell_3 == dh:
+                value_3 = sheet3.cell(a3, 1).value
+                list2.append(value_3)
+                b3 = a3 + 1
+                break
+
+    for a4 in range(b4, row_list[4]+1):
+        mh1 = []
+        if a4 == row_list[4]:
+            break
+        else:
+            cell_4 = sheet4.cell(a4, 0).value
+            if cell_4 != dh:
+                if len(list3) > 0:
+                    break
+                else:
+                    list3.append(0)
+                    break
+            else:
+                for index in range(0,col_list[4]):
+                    value_4 = sheet4.cell(a4, index).value
+                    mh1.append(value_4)
+                list3.append(mh1)
+                b4 = a4 + 1
+    xr(list1,list2,list3)
+
+# 新建模板并写入数据
+def xr(list1, list2,list3):
+    wb = load_workbook('D:\\fuwufei2\\清单模板.xlsx')
+    ws = wb["清单"]
+    max_col = ws.max_column
+    for yiwei in range(0, len(list1)):
+    # 循环list1,判断第一条数据是否为店长,不是店长就删除行
+        if yiwei == 0:
+            if list1[yiwei][1] != '店长':
+                pass
+                # ws.delete_rows(6,1)
+            else:
+                for i in range(2,max_col):
+                    ws.cell(row=6, column=i).value = list1[yiwei][i-1]
+    file_name = dir_path + '\\'+ list1[0][0] + '.xlsx'
+    wb.save(file_name)
+    wb.close()
+
+
 
 # 复制模板
 def copyMode():
@@ -97,151 +205,66 @@ def copyMode():
 
     print('Done.')
 
-def xhs(dh):
-    global b0, b1, b2, b3, b4
-    global sheet0, sheet1, sheet2, sheet3, sheet4
-    global list3, list4
-    list1 = []  # 存储匹配前五个表中对应数据的行数
-    list2 = []  # 存储匹配最后一个表中对应数据的行数
-
-    # 找到每个表的行数，如有存在行数就追加到list1,如不存在，在list1中加0后到后一个表匹配的行数
-    # b参数是记录每次查询到的位置
-    for a0 in range(b0, list3[0]):
-        # b的位置跟长度相等时，说明表中数据一匹配完，直接在list1中加0
-        if b0 == list3[0]:
-            list1.append(0)
-            break
-        else:
-            cell_0 = sheet0.cell(a0, 0).value
-            # 前五个表有且最多只能存在一条数据，判断一次是否等于匹配值就可以
-            if cell_0 == dh:
-                list1.append(a0)
-                b0 = a0 + 1
-                break
-
-    for a1 in range(b1, list3[1] + 1):
-        len1 = list3[1]
-        if a1 == len1:
-            list1.append(0)
-            break
-        else:
-            cell_1 = sheet1.cell(a1, 0).value
-            if cell_1 == dh:
-                list1.append(a1)
-                b1 = a1 + 1
-                break
-
-    for a2 in range(b2, list3[2] + 1):
-        len2 = list3[2]
-        if a2 == len2:
-            list1.append(0)
-            break
-        else:
-            cell_2 = sheet2.cell(a2, 0).value
-            if cell_2 == dh:
-                list1.append(a2)
-                b2 = a2 + 1
-                break
-
-    for a3 in range(b3, list3[3] + 1):
-        len3 = list3[3]
-        if a3 == len3:
-            list1.append(0)
-            break
-        else:
-            cell_3 = sheet3.cell(a3, 0).value
-            if cell_3 == dh:
-                list1.append(a3)
-                b3 = a3 + 1
-                break
-
-    for a4 in range(b4, list3[4] + 1):
-        len4 = list3[4]
-        if a4 == len4:
-            list1.append(0)
-            break
-        else:
-            cell_4 = sheet4.cell(a4, 0).value
-            if cell_4 == dh:
-                list1.append(a4)
-                b4 = a4 + 1
-                break
-
-    for a5 in range(b5, list3[5]):
-        len5 = list3[5]
-        if b5 == len5:
-            list2.append(0)
-            break
-        else:
-            cell_5 = sheet5.cell(a5, 0).value
-            if cell_5 != dh:
-                if len(list2) > 0:
-                    break
-                else:
-                    list2.append(0)
-                    break
-            else:
-                list2.append(a5)
-                b5 = a5 + 1
-
-    print(list1, list2, dh)
-
 if __name__ == '__main__':
     b0 = 1
     b1 = 1
     b2 = 1
     b3 = 1
     b4 = 1
-    b5 = 1
     row_list = []  # 存放每个表的行数
     col_list = []  # 存放每个表的列数
     # sheets_list = []  # 存放合并后的sheet名列表
     sheets_list = ['202012 小微店补', '202012 服务费清单原始数据', '202012 活动明细表', '202012 补扣款备注', '202012 门店信息表']
     # zhenghe_path = zhenghe()
 
-    data = xlrd.open_workbook("D:\\fuwufei\\xx.xlsx")
+    #创建文件夹存放各店信息
+    dir_path = 'D:\\fuwufei2\\' + getmonth() + '服务费清单'
+    os.mkdir(dir_path)
+
+    data = xlrd.open_workbook("D:\\fuwufei2\\xx.xlsx")
     # 按顺序打开各个sheet表并获取行列
     for num in range(0, len(sheets_list)):
         for sheet_list in sheets_list:
             if ('原始数据' in sheet_list) and num == 0:
                 sheet0 = data.sheet_by_name(sheet_list)
-                rows = sheet0.nrows
-                cols = sheet0.ncols
-                row_list.append(rows)
-                col_list.append(cols)
+                rows0 = sheet0.nrows
+                cols0 = sheet0.ncols
+                row_list.append(rows0)
+                col_list.append(cols0)
                 break
             elif ('门店信息' in sheet_list) and num == 1:
                 sheet1 = data.sheet_by_name(sheet_list)
-                rows = sheet1.nrows
-                cols = sheet1.ncols
-                row_list.append(rows)
-                col_list.append(cols)
+                rows1 = sheet1.nrows
+                cols1 = sheet1.ncols
+                row_list.append(rows1)
+                col_list.append(cols1)
                 break
             elif ('小微店补' in sheet_list) and num == 2:
                 sheet2 = data.sheet_by_name(sheet_list)
-                rows = sheet2.nrows
-                cols = sheet2.ncols
-                row_list.append(rows)
-                col_list.append(cols)
+                rows2 = sheet2.nrows
+                cols2 = sheet2.ncols
+                row_list.append(rows2)
+                col_list.append(cols2)
                 break
-            elif ('小微店补' in sheet_list) and num == 3:
+            elif ('补扣款备注' in sheet_list) and num == 3:
                 sheet3 = data.sheet_by_name(sheet_list)
-                rows = sheet3.nrows
-                cols = sheet3.ncols
-                row_list.append(rows)
-                col_list.append(cols)
+                rows3 = sheet3.nrows
+                cols3 = sheet3.ncols
+                row_list.append(rows3)
+                col_list.append(cols3)
                 break
             elif ('活动明细表' in sheet_list) and num == 4:
                 sheet4 = data.sheet_by_name(sheet_list)
-                rows = sheet4.nrows
-                cols = sheet4.ncols
-                row_list.append(rows)
-                col_list.append(cols)
+                rows4 = sheet4.nrows
+                cols4 = sheet4.ncols
+                row_list.append(rows4)
+                col_list.append(cols4)
                 break
 
-    for xhdh in range(1,  rows):
+    print(row_list)
+    for xhdh in range(1, row_list[0] ):
         dh1 = sheet0.cell(xhdh-1, 0).value
         dh2 = sheet0.cell(xhdh, 0).value # 需要制作清单的店号
-        if dh1 == dh2 :
+        if dh1 != dh2 :
             xhs(dh2)
 

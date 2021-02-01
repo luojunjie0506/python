@@ -73,9 +73,8 @@ def xhs(dh):
                 break
             else:
                 for index in range(0,col_list[0]):
-                    if index !=0 :
-                        value_0 = sheet0.cell(a0, index).value
-                        mh0.append(value_0)
+                    value_0 = sheet0.cell(a0, index).value
+                    mh0.append(value_0)
                 list1.append(mh0)
                 b0 = a0 + 1
 
@@ -136,7 +135,8 @@ def xhs(dh):
     #数据处理
     list1  = dataCl1(list1,list2)
     list3 = dataCl3(list3)
-    # print(list1)
+    # print(list3)
+    # print(len(list3))
     # 传入xr方法
     xr(list1,list2,list3)
 
@@ -199,10 +199,12 @@ def dataCl1(list1,list2):
 
 # list3数据处理
 def dataCl3(list3):
-    if len(list3) > 1:
+    if len(list3) > 0:
         list4 = np.array(list3)
         idex = np.lexsort([list4[:, 1], list4[:, 5]])
         list3 = list4[idex, :]
+        # for i in range(0, len(list3)):
+        #     list3[i].insert(0, i + 1)
         return list3
     else:
         return list3
@@ -210,15 +212,24 @@ def dataCl3(list3):
 
 # 新建模板并写入数据
 def xr(list1, list2,list3):
-    global yue
+    global yue,wcnum
+    wb = load_workbook('D:\\fuwufei2\\清单模板.xlsx')
+    ws = wb["清单"]
+    ws1 = wb['活动奖项明细']
     a = '注：服务费发放说明：\n1、活动奖：全拓直接服务奖 + 分享有礼直接服务奖 + 翻倍服务奖（明细见附件2\n2、收入合计 = 个人销售奖 + 销售服务奖 + 活动奖 + 领导奖 + 卓越奖\n3、秒结入账：符合秒结规则的分享有礼直接服务奖和对应个人销售奖，已实时入账相应电子积分秒结账户，不再做月结入账\n4、月结入账 = 收入合计 - 秒结入账 - 保险代扣 - 其他扣除\n5、绿色代表收入，粉色代表支出。\n'
-    n = 6
+    n = 6  #清单sheet从哪行开始写
+    n1 = 3 #活动奖项明细sheet从哪行开始写
+
+    #清单sheet写入数据
     for yiwei in range(0, len(list1)):
-        print(list1[yiwei])
-        print(max_col)
         if len(list1[yiwei]) >10:
+            ss = 1#清单sheet从哪列开始写
             for i in range(0,len(list1[yiwei])):
-                ws.cell(row=n, column=i+1).value = list1[yiwei][i]
+                if i==1:
+                    continue
+                else:
+                    ws.cell(row=n, column=ss).value = list1[yiwei][i]
+                    ss += 1
             n +=1
         elif len(list1[yiwei]) == 6:
             ws.cell(row=n, column=1).value = list1[yiwei][0]
@@ -238,10 +249,50 @@ def xr(list1, list2,list3):
     ws['H3'] = list2[1]
     ws['M3'] = yue
     ws['Q3'] = list2[2]
-    ws['T6'] = list2[5]
+    ws['T6'] = list2[6]
     ws.cell(row=n, column=1).value = a
-    file_name = dir_path + '\\'+ list1[0][1] + '.xlsx'
+
+    #活动奖项明细sheet写入数据
+    ss1 = 3  # 活动奖项明细sheet从哪列开始写
+    if len(list3) == 1:
+        if len(list3[0]) != 0:
+            for i in range(0, len(list3[0])-1):
+                ws1.cell(row=3, column=2).value = i + 1
+                ws1.cell(row=3, column=i+3).value = list3[0][i+1]
+    else:
+        for i in range(0, len(list3)):
+            if len(list3[i]) >2:
+                for c in range(0, len(list3[i])-1):
+                    ws1.cell(row=i+3, column=2).value = i + 1
+                    ws1.cell(row=i+3, column=c+3).value = list3[i][c+1]
+            else:
+                ws1.cell(row=i + 3, column=2).value = list3[i][0]
+                ws1.cell(row=i + 3, column=8).value = list3[i][1]
+
+    # for yiwei in range(0, len(list3)):
+    #     if len(list3[yiwei]) > 2:
+    #         ss1 = 3  # 活动奖项明细sheet从哪列开始写
+    #         for i in range(0, len(list3[yiwei])):
+    #             if i == 0:
+    #                 continue
+    #             else:
+    #                 ws1.cell(row=n1, column=2).value = i+1
+    #                 ws1.cell(row=n1, column=ss1).value = list3[yiwei][i]
+    #                 ss1 += 1
+    #         n1 += 1
+    #     elif len(list3[yiwei]) ==1 :
+    #
+    #         break
+    #     else:
+    #         ws1.cell(row=n1, column=2).value = list1[yiwei][0]
+    #         ws1.cell(row=n1, column=8).value = list1[yiwei][1]
+    #         n1 += 1
+
+    file_name = dir_path + '\\'+ list2[0] + '.xlsx'
     wb.save(file_name)
+    wb.close()
+    wcnum += 1
+    print(wcnum)
 
 if __name__ == '__main__':
     b0 = 1
@@ -249,6 +300,7 @@ if __name__ == '__main__':
     b2 = 1
     b3 = 1
     b4 = 1
+    wcnum = 0 #完成的数量
     row_list = []  # 存放每个表的行数
     col_list = []  # 存放每个表的列数
     yue = getmonth()
@@ -258,11 +310,7 @@ if __name__ == '__main__':
 
     #创建文件夹存放各店信息
     dir_path = 'D:\\fuwufei2\\' + getmonth() + '服务费清单'
-    #os.mkdir(dir_path)
-
-    wb = load_workbook('D:\\fuwufei2\\清单模板.xlsx')
-    ws = wb["清单"]
-    max_col = ws.max_column
+    # os.mkdir(dir_path)
 
     data = xlrd.open_workbook("D:\\fuwufei2\\xx.xlsx")
     # 按顺序打开各个sheet表并获取行列

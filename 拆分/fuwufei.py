@@ -1,3 +1,4 @@
+# coding=gbk
 import copy
 import datetime
 import openpyxl
@@ -6,10 +7,11 @@ import pandas as pd
 import xlrd
 from openpyxl import *
 from openpyxl.utils import get_column_letter
+import numpy as np
 
 
 def getmonth():
-    # è·å–å½“å‰æœˆä»½-1
+    # »ñÈ¡µ±Ç°ÔÂ·İ-1
     year = datetime.datetime.now().year
     month = datetime.datetime.now().month
     if month ==1 :
@@ -20,28 +22,28 @@ def getmonth():
         ym = str(year) + str(month - 1)
     return ym
 
-# æ•´åˆæ–‡ä»¶å¤¹ä¸­çš„è¡¨åˆ°ä¸€ä¸ªexcelä¸­
+# ÕûºÏÎÄ¼ş¼ĞÖĞµÄ±íµ½Ò»¸öexcelÖĞ
 def zhenghe():
     global sheets_list
-    path = 'D:\\fuwufei\\c\\' # æ–‡ä»¶å¤¹è·¯å¾„
-    save_path = 'D:\\fuwufei\\xx.xlsx'  # åˆå¹¶åexcelçš„å­˜æ”¾è·¯å¾„
-    file_list = os.listdir(path)  # è·å–æ–‡ä»¶å¤¹ä¸­çš„æ‰€æœ‰æ–‡ä»¶åçš„åˆ—è¡¨
-    writer = pd.ExcelWriter(save_path)  # ä½¿ç”¨ExcelWriterå‡½æ•°ï¼Œå¯ä»¥å†™å…¥æ•°æ®æ—¶ä¸ä¼šè¦†ç›–sheet
-    # éå†æ–‡ä»¶å¤¹ä¸­çš„æ‰€æœ‰æ–‡ä»¶åçš„åˆ—è¡¨
+    path = 'D:\\fuwufei\\c\\' # ÎÄ¼ş¼ĞÂ·¾¶
+    save_path = 'D:\\fuwufei\\xx.xlsx'  # ºÏ²¢ºóexcelµÄ´æ·ÅÂ·¾¶
+    file_list = os.listdir(path)  # »ñÈ¡ÎÄ¼ş¼ĞÖĞµÄËùÓĞÎÄ¼şÃûµÄÁĞ±í
+    writer = pd.ExcelWriter(save_path)  # Ê¹ÓÃExcelWriterº¯Êı£¬¿ÉÒÔĞ´ÈëÊı¾İÊ±²»»á¸²¸Çsheet
+    # ±éÀúÎÄ¼ş¼ĞÖĞµÄËùÓĞÎÄ¼şÃûµÄÁĞ±í
     for a in file_list:
-        file_path = path + a  # æ‹¼æ¥å®Œæ•´è·¯å¾„
-        data = pd.read_excel(file_path, sheet_name=0)  # è¯»å–æ–‡ä»¶å¤¹ä¸­çš„è¡¨
-        df = pd.DataFrame(data)  # è½¬æ¢æ ¼å¼
+        file_path = path + a  # Æ´½ÓÍêÕûÂ·¾¶
+        data = pd.read_excel(file_path, sheet_name=0)  # ¶ÁÈ¡ÎÄ¼ş¼ĞÖĞµÄ±í
+        df = pd.DataFrame(data)  # ×ª»»¸ñÊ½
 
-        # å¾ªç¯æ¯ä¸ªè¡¨ä¸­è¡¨å¤´çš„ç¬¬ä¸€ä¸ªå­—æ®µï¼Œå¹¶ç”¨æ¥æ’åº
+        # Ñ­»·Ã¿¸ö±íÖĞ±íÍ·µÄµÚÒ»¸ö×Ö¶Î£¬²¢ÓÃÀ´ÅÅĞò
         for btname in data:
-            #åˆ¤æ–­è¡¨æ˜¯å¦æ˜¯æœåŠ¡è´¹æ¸…å•åŸå§‹æ•°æ®è¡¨ï¼Œæ˜¯çš„è¯å°±è¦è¡¨ä¸­ç¬¬ä¸€ä¸ªå­—æ®µå’Œé¡ºåºå­—æ®µæ’åˆ—
-            # if 'åŸå§‹æ•°æ®' in a:
-            #     df.sort_values(by=[btname, 'é¡ºåº'], ascending=True, inplace=True)  # ä½¿ç”¨ç¬¬ä¸€ä¸ªå­—æ®µæ¥å‡åºã€‚ascendingæ’åºï¼Œinplaceæ›¿ä»£
+            #ÅĞ¶Ï±íÊÇ·ñÊÇ·şÎñ·ÑÇåµ¥Ô­Ê¼Êı¾İ±í£¬ÊÇµÄ»°¾ÍÒª±íÖĞµÚÒ»¸ö×Ö¶ÎºÍË³Ğò×Ö¶ÎÅÅÁĞ
+            # if 'Ô­Ê¼Êı¾İ' in a:
+            #     df.sort_values(by=[btname, 'Ë³Ğò'], ascending=True, inplace=True)  # Ê¹ÓÃµÚÒ»¸ö×Ö¶ÎÀ´ÉıĞò¡£ascendingÅÅĞò£¬inplaceÌæ´ú
             # else:
-            #     df.sort_values(by=btname, ascending=True, inplace=True)  # ä½¿ç”¨ç¬¬ä¸€ä¸ªå­—æ®µæ¥å‡åºã€‚ascendingæ’åºï¼Œinplaceæ›¿ä»£
+            #     df.sort_values(by=btname, ascending=True, inplace=True)  # Ê¹ÓÃµÚÒ»¸ö×Ö¶ÎÀ´ÉıĞò¡£ascendingÅÅĞò£¬inplaceÌæ´ú
             df.sort_values(by=btname, ascending=True, inplace=True)
-            df.to_excel(writer, encoding='utf-8', sheet_name=a[:-5], index=None)  # å†™å…¥sheetä¸­ indexæ— ç´¢å¼•
+            df.to_excel(writer, encoding='utf-8', sheet_name=a[:-5], index=None)  # Ğ´ÈësheetÖĞ indexÎŞË÷Òı
             writer.save()
             writer.close()
             sheets_list.append(a[:-5])
@@ -53,16 +55,16 @@ def xhs(dh):
     global b0, b1, b2, b3, b4
     global sheet0, sheet1, sheet2, sheet3, sheet4
     global row_list, col_list
-    # '202012 æœåŠ¡è´¹æ¸…å•åŸå§‹æ•°æ®','202012 é—¨åº—ä¿¡æ¯è¡¨', '202012 å°å¾®åº—è¡¥', '202012 è¡¥æ‰£æ¬¾å¤‡æ³¨',  '202012 æ´»åŠ¨æ˜ç»†è¡¨'
-    list1 = []  # å­˜å‚¨åŒ¹é…æœåŠ¡è´¹æ¸…å•åŸå§‹æ•°æ®
-    list2 = []  # å­˜å‚¨åŒ¹é…è¡¥æ‰£æ¬¾å¤‡æ³¨,å°å¾®åº—è¡¥,é—¨åº—ä¿¡æ¯è¡¨
-    list3 = []  # å­˜å‚¨åŒ¹é…æ´»åŠ¨æ˜ç»†è¡¨
+    # '202012 ·şÎñ·ÑÇåµ¥Ô­Ê¼Êı¾İ','202012 ÃÅµêĞÅÏ¢±í', '202012 Ğ¡Î¢µê²¹', '202012 ²¹¿Û¿î±¸×¢',  '202012 »î¶¯Ã÷Ï¸±í'
+    list1 = []  # ´æ´¢Æ¥Åä·şÎñ·ÑÇåµ¥Ô­Ê¼Êı¾İ
+    list2 = []  # ´æ´¢Æ¥Åä²¹¿Û¿î±¸×¢,Ğ¡Î¢µê²¹,ÃÅµêĞÅÏ¢±í
+    list3 = []  # ´æ´¢Æ¥Åä»î¶¯Ã÷Ï¸±í
 
-    # æ‰¾åˆ°æ¯ä¸ªè¡¨çš„è¡Œæ•°ï¼Œå¦‚æœ‰å­˜åœ¨è¡Œæ•°å°±è¿½åŠ åˆ°list1,å¦‚ä¸å­˜åœ¨ï¼Œåœ¨list1ä¸­åŠ 0ååˆ°åä¸€ä¸ªè¡¨åŒ¹é…çš„è¡Œæ•°
-    # bå‚æ•°æ˜¯è®°å½•æ¯æ¬¡æŸ¥è¯¢åˆ°çš„ä½ç½®
+    # ÕÒµ½Ã¿¸ö±íµÄĞĞÊı£¬ÈçÓĞ´æÔÚĞĞÊı¾Í×·¼Óµ½list1,Èç²»´æÔÚ£¬ÔÚlist1ÖĞ¼Ó0ºóµ½ºóÒ»¸ö±íÆ¥ÅäµÄĞĞÊı
+    # b²ÎÊıÊÇ¼ÇÂ¼Ã¿´Î²éÑ¯µ½µÄÎ»ÖÃ
     for a0 in range(b0, row_list[0]):
         mh0 = []
-        # bçš„ä½ç½®è·Ÿé•¿åº¦ç›¸ç­‰æ—¶ï¼Œè¯´æ˜è¡¨ä¸­æ•°æ®ä¸€åŒ¹é…å®Œï¼Œç›´æ¥åœ¨listä¸­åŠ 0
+        # bµÄÎ»ÖÃ¸ú³¤¶ÈÏàµÈÊ±£¬ËµÃ÷±íÖĞÊı¾İÒ»Æ¥ÅäÍê£¬Ö±½ÓÔÚlistÖĞ¼Ó0
         if a0 == row_list[0]:
             break
         else:
@@ -71,12 +73,14 @@ def xhs(dh):
                 break
             else:
                 for index in range(0,col_list[0]):
-                    value_0 = sheet0.cell(a0, index).value
-                    mh0.append(value_0)
+                    if index !=0 :
+                        value_0 = sheet0.cell(a0, index).value
+                        mh0.append(value_0)
                 list1.append(mh0)
                 b0 = a0 + 1
 
-    for a1 in range(b1, row_list[1] + 1):
+    # forÑ­»·ÖĞÈç¹ûrangeÖĞµÄÁ½¸ö²ÎÊı¶¼Ò»ÑùÊ±,ÄÇÕâ¸öÑ­»·¾Í²»Ö´ĞĞ,ÎªÁËÈÃÑ­»·¼ÌĞøÖ´ĞĞËùÒÔ+1
+    for a1 in range(b1, row_list[1]+1):
         if a1 == row_list[1]:
             list2.append('')
             break
@@ -89,7 +93,8 @@ def xhs(dh):
                 b1 = a1 + 1
                 break
 
-    for a2 in range(b2, row_list[2] + 1):
+
+    for a2 in range(b2, row_list[2]+1):
         if a2 == row_list[2]:
             list2.append('')
             break
@@ -101,7 +106,7 @@ def xhs(dh):
                 b2 = a2 + 1
                 break
 
-    for a3 in range(b3, row_list[3] + 1):
+    for a3 in range(b3, row_list[3]+1):
         if a3 == row_list[3]:
             list2.append('')
             break
@@ -113,103 +118,130 @@ def xhs(dh):
                 b3 = a3 + 1
                 break
 
-    for a4 in range(b4, row_list[4]+1):
+    for a4 in range(b4, row_list[4]):
         mh1 = []
         if a4 == row_list[4]:
             break
         else:
             cell_4 = sheet4.cell(a4, 0).value
             if cell_4 != dh:
-                if len(list3) > 0:
-                    break
-                else:
-                    list3.append(0)
-                    break
+                break
             else:
                 for index in range(0,col_list[4]):
                     value_4 = sheet4.cell(a4, index).value
                     mh1.append(value_4)
                 list3.append(mh1)
                 b4 = a4 + 1
+
+    #Êı¾İ´¦Àí
+    list1  = dataCl1(list1,list2)
+    list3 = dataCl3(list3)
+    # print(list1)
+    # ´«Èëxr·½·¨
     xr(list1,list2,list3)
 
-# æ–°å»ºæ¨¡æ¿å¹¶å†™å…¥æ•°æ®
+# list1ÖĞÊı¾İµÄ´¦Àí
+def dataCl1(list1,list2):
+    def take2(elem):
+        return elem[1]
+    list1.sort(key=take2)
+    sum = 0
+    for yiwei in range(0, len(list1)):
+        # ÅĞ¶ÏµÚÒ»²ã
+        if yiwei == 0:
+            # ÅĞ¶Ïlist1µÄµÚÒ»ĞĞÊÇ·ñµê³¤
+            if list1[yiwei][1] == 'µê³¤':
+                if list2[5] != '':
+                    # list2ÖĞĞ¡Ş±µê²¹²»Îª¿Õ,¼ÓÒ»ĞĞĞ¡Ş±,Ò»ĞĞºÏ¼Æ
+                    sss = []
+                    sss.append(list2[0])
+                    sss.append(list2[1])
+                    sss.append(list2[4])
+                    sss.append('Ğ¡Î¢µê²¹')
+                    sss.append(list2[5])
+                    list1.insert(1, sss)
+                    sss1 = ['µç×Ó»ı·Ö¸öÈËÕË»§ÈëÕËºÏ¼Æ']
+                    nuM = float(list1[0][16]) + float(list2[5])
+                    sss1.append(nuM)
+                    list1.insert(2, sss1)
+                else:
+                    # list2ÖĞĞ¡Ş±µê²¹Îª¿Õ,¼ÓÒ»ĞĞºÏ¼Æ
+                    sss1 = ['µç×Ó»ı·Ö¸öÈËÕË»§ÈëÕËºÏ¼Æ']
+                    sss1.append(list1[0][16])
+                    list1.insert(1, sss1)
+            else:
+                if list2[5] != '':
+                    sss = []
+                    sss.append(list2[0])
+                    sss.append(list2[1])
+                    sss.append(list2[4])
+                    sss.append(list2[5])
+                    list1.insert(0, sss)
+                    sss1 = ['µç×Ó»ı·Ö¸öÈËÕË»§ÈëÕËºÏ¼Æ']
+                    sss1.append(list2[5])
+                    list1.insert(1, sss1)
+        else:
+            if list1[yiwei][1] == 'ÃÅµê´ú·¢£¼200Ôª':
+                if yiwei+1 == len(list1):
+                    break
+                elif list1[yiwei][1] == list1[yiwei + 1][1]:
+                    sum += float(list1[yiwei][16])
+                    continue
+                elif list1[yiwei][1] != list1[yiwei + 1][1]:
+                    sum += float(list1[yiwei][16])
+                    sss1 = ['µç×Ó»ı·Ö´ú·¢ÕË»§ÈëÕËºÏ¼Æ']
+                    sss1.append(sum)
+                    list1.insert(yiwei + 1, sss1)
+                    break
+    for i in range(0,len(list1)):
+        list1[i].insert(0, i+1)
+    return list1
+
+# list3Êı¾İ´¦Àí
+def dataCl3(list3):
+    if len(list3) > 1:
+        list4 = np.array(list3)
+        idex = np.lexsort([list4[:, 1], list4[:, 5]])
+        list3 = list4[idex, :]
+        return list3
+    else:
+        return list3
+
+
+# ĞÂ½¨Ä£°å²¢Ğ´ÈëÊı¾İ
 def xr(list1, list2,list3):
     global yue
-    a = 'æ³¨ï¼šæœåŠ¡è´¹å‘æ”¾è¯´æ˜ï¼š\n1ã€æ´»åŠ¨å¥–ï¼šå…¨æ‹“ç›´æ¥æœåŠ¡å¥– + åˆ†äº«æœ‰ç¤¼ç›´æ¥æœåŠ¡å¥– + ç¿»å€æœåŠ¡å¥–ï¼ˆæ˜ç»†è§é™„ä»¶2\n2ã€æ”¶å…¥åˆè®¡ = ä¸ªäººé”€å”®å¥– + é”€å”®æœåŠ¡å¥– + æ´»åŠ¨å¥– + é¢†å¯¼å¥– + å“è¶Šå¥–\n3ã€ç§’ç»“å…¥è´¦ï¼šç¬¦åˆç§’ç»“è§„åˆ™çš„åˆ†äº«æœ‰ç¤¼ç›´æ¥æœåŠ¡å¥–å’Œå¯¹åº”ä¸ªäººé”€å”®å¥–ï¼Œå·²å®æ—¶å…¥è´¦ç›¸åº”ç”µå­ç§¯åˆ†ç§’ç»“è´¦æˆ·ï¼Œä¸å†åšæœˆç»“å…¥è´¦\n4ã€æœˆç»“å…¥è´¦ = æ”¶å…¥åˆè®¡ - ç§’ç»“å…¥è´¦ - ä¿é™©ä»£æ‰£ - å…¶ä»–æ‰£é™¤\n5ã€ç»¿è‰²ä»£è¡¨æ”¶å…¥ï¼Œç²‰è‰²ä»£è¡¨æ”¯å‡ºã€‚\n'
-    wb = load_workbook('D:\\fuwufei2\\æ¸…å•æ¨¡æ¿.xlsx')
-    ws = wb["æ¸…å•"]
-    max_col = ws.max_column
+    a = '×¢£º·şÎñ·Ñ·¢·ÅËµÃ÷£º\n1¡¢»î¶¯½±£ºÈ«ÍØÖ±½Ó·şÎñ½± + ·ÖÏíÓĞÀñÖ±½Ó·şÎñ½± + ·­±¶·şÎñ½±£¨Ã÷Ï¸¼û¸½¼ş2\n2¡¢ÊÕÈëºÏ¼Æ = ¸öÈËÏúÊÛ½± + ÏúÊÛ·şÎñ½± + »î¶¯½± + Áìµ¼½± + ×¿Ô½½±\n3¡¢Ãë½áÈëÕË£º·ûºÏÃë½á¹æÔòµÄ·ÖÏíÓĞÀñÖ±½Ó·şÎñ½±ºÍ¶ÔÓ¦¸öÈËÏúÊÛ½±£¬ÒÑÊµÊ±ÈëÕËÏàÓ¦µç×Ó»ı·ÖÃë½áÕË»§£¬²»ÔÙ×öÔÂ½áÈëÕË\n4¡¢ÔÂ½áÈëÕË = ÊÕÈëºÏ¼Æ - Ãë½áÈëÕË - ±£ÏÕ´ú¿Û - ÆäËû¿Û³ı\n5¡¢ÂÌÉ«´ú±íÊÕÈë£¬·ÛÉ«´ú±íÖ§³ö¡£\n'
+    n = 6
     for yiwei in range(0, len(list1)):
-        n = 6
-        for yiwei in range(0, len(list1)):
-            for i in range(2,max_col):
-                ws.cell(row=n, column=i).value = list1[yiwei][i - 1]
+        print(list1[yiwei])
+        print(max_col)
+        if len(list1[yiwei]) >10:
+            for i in range(0,len(list1[yiwei])):
+                ws.cell(row=n, column=i+1).value = list1[yiwei][i]
             n +=1
-        ws['C3'] = list2[0]
-        ws['H3'] = list2[1]
-        ws['M3'] = yue
-        ws['Q3'] = list2[2]
-        ws['F7'] = list2[3]
-        ws['Q7'] = list2[4]
-        ws['T6'] = list2[5]
-    file_name = dir_path + '\\'+ list1[0][0] + '.xlsx'
+        elif len(list1[yiwei]) == 6:
+            ws.cell(row=n, column=1).value = list1[yiwei][0]
+            ws.cell(row=n, column=3).value = list1[yiwei][1]
+            ws.cell(row=n, column=4).value = list1[yiwei][2]
+            ws.cell(row=n, column=6).value = list1[yiwei][3]
+            ws.cell(row=n, column=8).value = list1[yiwei][4]
+            ws.cell(row=n, column=17).value = list1[yiwei][5]
+            n += 1
+        elif len(list1[yiwei]) == 3:
+            ws.cell(row=n, column=1).value = list1[yiwei][0]
+            ws.cell(row=n, column=3).value = list1[yiwei][1]
+            ws.cell(row=n, column=17).value = list1[yiwei][2]
+            n += 1
+
+    ws['C3'] = list2[0]
+    ws['H3'] = list2[1]
+    ws['M3'] = yue
+    ws['Q3'] = list2[2]
+    ws['T6'] = list2[5]
+    ws.cell(row=n, column=1).value = a
+    file_name = dir_path + '\\'+ list1[0][1] + '.xlsx'
     wb.save(file_name)
-    wb.close()
-
-
-
-# å¤åˆ¶æ¨¡æ¿
-def copyMode():
-    path = 'D:\\Book1.xlsx' # æ¨¡æ¿è·¯å¾„
-    save_path = 'D:\\Book2.xlsx' #ä¿å­˜è·¯å¾„
-
-    wb = openpyxl.load_workbook(path)
-    wb2 = openpyxl.Workbook()
-
-    sheetnames = wb.sheetnames
-    for sheetname in sheetnames:
-        print(sheetname)
-        sheet = wb[sheetname]
-        sheet2 = wb2.create_sheet(sheetname)
-
-        # tabé¢œè‰²
-        sheet2.sheet_properties.tabColor = sheet.sheet_properties.tabColor
-
-        # å¼€å§‹å¤„ç†åˆå¹¶å•å…ƒæ ¼å½¢å¼ä¸ºâ€œ(<CellRange A1ï¼šA4>,)ï¼Œæ›¿æ¢æ‰(<CellRange å’Œ >,)' æ‰¾åˆ°åˆå¹¶å•å…ƒæ ¼
-        wm = list(sheet.merged_cells)
-        if len(wm) > 0:
-            for i in range(0, len(wm)):
-                cell2 = str(wm[i]).replace('(<CellRange ', '').replace('>,)', '')
-                sheet2.merge_cells(cell2)
-
-        for i, row in enumerate(sheet.iter_rows()):
-            sheet2.row_dimensions[i+1].height = sheet.row_dimensions[i+1].height
-            for j, cell in enumerate(row):
-                sheet2.column_dimensions[get_column_letter(j+1)].width = sheet.column_dimensions[get_column_letter(j+1)].width
-                sheet2.cell(row=i + 1, column=j + 1, value=cell.value)
-
-                # è®¾ç½®å•å…ƒæ ¼æ ¼å¼
-                source_cell = sheet.cell(i+1, j+1)
-                target_cell = sheet2.cell(i+1, j+1)
-                target_cell.fill = copy.copy(source_cell.fill)
-                if source_cell.has_style:
-                    target_cell._style = copy.copy(source_cell._style)
-                    target_cell.font = copy.copy(source_cell.font)
-                    target_cell.border = copy.copy(source_cell.border)
-                    target_cell.fill = copy.copy(source_cell.fill)
-                    target_cell.number_format = copy.copy(source_cell.number_format)
-                    target_cell.protection = copy.copy(source_cell.protection)
-                    target_cell.alignment = copy.copy(source_cell.alignment)
-
-    if 'Sheet' in wb2.sheetnames:
-        del wb2['Sheet']
-    wb2.save(save_path)
-
-    wb.close()
-    wb2.close()
-
-    print('Done.')
 
 if __name__ == '__main__':
     b0 = 1
@@ -217,50 +249,54 @@ if __name__ == '__main__':
     b2 = 1
     b3 = 1
     b4 = 1
-    row_list = []  # å­˜æ”¾æ¯ä¸ªè¡¨çš„è¡Œæ•°
-    col_list = []  # å­˜æ”¾æ¯ä¸ªè¡¨çš„åˆ—æ•°
+    row_list = []  # ´æ·ÅÃ¿¸ö±íµÄĞĞÊı
+    col_list = []  # ´æ·ÅÃ¿¸ö±íµÄÁĞÊı
     yue = getmonth()
-    # sheets_list = []  # å­˜æ”¾åˆå¹¶åçš„sheetååˆ—è¡¨
-    sheets_list = ['202012 å°å¾®åº—è¡¥', '202012 æœåŠ¡è´¹æ¸…å•åŸå§‹æ•°æ®', '202012 æ´»åŠ¨æ˜ç»†è¡¨', '202012 è¡¥æ‰£æ¬¾å¤‡æ³¨', '202012 é—¨åº—ä¿¡æ¯è¡¨']
+    # sheets_list = []  # ´æ·ÅºÏ²¢ºóµÄsheetÃûÁĞ±í
+    sheets_list = ['202012 Ğ¡Î¢µê²¹', '202012 ·şÎñ·ÑÇåµ¥Ô­Ê¼Êı¾İ', '202012 »î¶¯Ã÷Ï¸±í', '202012 ²¹¿Û¿î±¸×¢', '202012 ÃÅµêĞÅÏ¢±í']
     # zhenghe_path = zhenghe()
 
-    #åˆ›å»ºæ–‡ä»¶å¤¹å­˜æ”¾å„åº—ä¿¡æ¯
-    dir_path = 'D:\\fuwufei2\\' + getmonth() + 'æœåŠ¡è´¹æ¸…å•'
-    os.mkdir(dir_path)
+    #´´½¨ÎÄ¼ş¼Ğ´æ·Å¸÷µêĞÅÏ¢
+    dir_path = 'D:\\fuwufei2\\' + getmonth() + '·şÎñ·ÑÇåµ¥'
+    #os.mkdir(dir_path)
+
+    wb = load_workbook('D:\\fuwufei2\\Çåµ¥Ä£°å.xlsx')
+    ws = wb["Çåµ¥"]
+    max_col = ws.max_column
 
     data = xlrd.open_workbook("D:\\fuwufei2\\xx.xlsx")
-    # æŒ‰é¡ºåºæ‰“å¼€å„ä¸ªsheetè¡¨å¹¶è·å–è¡Œåˆ—
+    # °´Ë³Ğò´ò¿ª¸÷¸ösheet±í²¢»ñÈ¡ĞĞÁĞ
     for num in range(0, len(sheets_list)):
         for sheet_list in sheets_list:
-            if ('åŸå§‹æ•°æ®' in sheet_list) and num == 0:
+            if ('Ô­Ê¼Êı¾İ' in sheet_list) and num == 0:
                 sheet0 = data.sheet_by_name(sheet_list)
                 rows0 = sheet0.nrows
                 cols0 = sheet0.ncols
                 row_list.append(rows0)
                 col_list.append(cols0)
                 break
-            elif ('é—¨åº—ä¿¡æ¯' in sheet_list) and num == 1:
+            elif ('ÃÅµêĞÅÏ¢' in sheet_list) and num == 1:
                 sheet1 = data.sheet_by_name(sheet_list)
                 rows1 = sheet1.nrows
                 cols1 = sheet1.ncols
                 row_list.append(rows1)
                 col_list.append(cols1)
                 break
-            elif ('å°å¾®åº—è¡¥' in sheet_list) and num == 2:
+            elif ('Ğ¡Î¢µê²¹' in sheet_list) and num == 2:
                 sheet2 = data.sheet_by_name(sheet_list)
                 rows2 = sheet2.nrows
                 cols2 = sheet2.ncols
                 row_list.append(rows2)
                 col_list.append(cols2)
                 break
-            elif ('è¡¥æ‰£æ¬¾å¤‡æ³¨' in sheet_list) and num == 3:
+            elif ('²¹¿Û¿î±¸×¢' in sheet_list) and num == 3:
                 sheet3 = data.sheet_by_name(sheet_list)
                 rows3 = sheet3.nrows
                 cols3 = sheet3.ncols
                 row_list.append(rows3)
                 col_list.append(cols3)
                 break
-            elif ('æ´»åŠ¨æ˜ç»†è¡¨' in sheet_list) and num == 4:
+            elif ('»î¶¯Ã÷Ï¸±í' in sheet_list) and num == 4:
                 sheet4 = data.sheet_by_name(sheet_list)
                 rows4 = sheet4.nrows
                 cols4 = sheet4.ncols
@@ -271,7 +307,7 @@ if __name__ == '__main__':
     print(row_list)
     for xhdh in range(1, row_list[0] ):
         dh1 = sheet0.cell(xhdh-1, 0).value
-        dh2 = sheet0.cell(xhdh, 0).value # éœ€è¦åˆ¶ä½œæ¸…å•çš„åº—å·
+        dh2 = sheet0.cell(xhdh, 0).value # ĞèÒªÖÆ×÷Çåµ¥µÄµêºÅ
         if dh1 != dh2 :
             xhs(dh2)
 

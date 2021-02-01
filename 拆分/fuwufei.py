@@ -135,18 +135,24 @@ def xhs(dh):
 
 # 新建模板并写入数据
 def xr(list1, list2,list3):
+    global yue
+    a = '注：服务费发放说明：\n1、活动奖：全拓直接服务奖 + 分享有礼直接服务奖 + 翻倍服务奖（明细见附件2\n2、收入合计 = 个人销售奖 + 销售服务奖 + 活动奖 + 领导奖 + 卓越奖\n3、秒结入账：符合秒结规则的分享有礼直接服务奖和对应个人销售奖，已实时入账相应电子积分秒结账户，不再做月结入账\n4、月结入账 = 收入合计 - 秒结入账 - 保险代扣 - 其他扣除\n5、绿色代表收入，粉色代表支出。\n'
     wb = load_workbook('D:\\fuwufei2\\清单模板.xlsx')
     ws = wb["清单"]
     max_col = ws.max_column
     for yiwei in range(0, len(list1)):
-    # 循环list1,判断第一条数据是否为店长,不是店长就删除行
-        if yiwei == 0:
-            if list1[yiwei][1] != '店长':
-                pass
-                # ws.delete_rows(6,1)
-            else:
-                for i in range(2,max_col):
-                    ws.cell(row=6, column=i).value = list1[yiwei][i-1]
+        n = 6
+        for yiwei in range(0, len(list1)):
+            for i in range(2,max_col):
+                ws.cell(row=n, column=i).value = list1[yiwei][i - 1]
+            n +=1
+        ws['C3'] = list2[0]
+        ws['H3'] = list2[1]
+        ws['M3'] = yue
+        ws['Q3'] = list2[2]
+        ws['F7'] = list2[3]
+        ws['Q7'] = list2[4]
+        ws['T6'] = list2[5]
     file_name = dir_path + '\\'+ list1[0][0] + '.xlsx'
     wb.save(file_name)
     wb.close()
@@ -213,6 +219,7 @@ if __name__ == '__main__':
     b4 = 1
     row_list = []  # 存放每个表的行数
     col_list = []  # 存放每个表的列数
+    yue = getmonth()
     # sheets_list = []  # 存放合并后的sheet名列表
     sheets_list = ['202012 小微店补', '202012 服务费清单原始数据', '202012 活动明细表', '202012 补扣款备注', '202012 门店信息表']
     # zhenghe_path = zhenghe()

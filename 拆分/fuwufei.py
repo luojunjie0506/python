@@ -217,6 +217,12 @@ def dataCl3(list3):
             cc.append(ss[y][1])
             # 因为循环了几次就插入了几行,行数变化所以加上y
             list3.insert(ss[y][0] + y, cc)
+        value = ''
+        for x in range(0, len(list3)):
+            if list3[x][1] != value:
+                value = list3[x][1]
+            else:
+                list3[x][1] = ''
         return list3
     else:
         return list3

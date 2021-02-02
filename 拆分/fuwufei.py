@@ -130,7 +130,7 @@ def xhs(dh):
     #数据处理
     list1  = dataCl1(list1,list2)
     list3 = dataCl3(list3)
-    # print(list3)
+    # print(list1)
     # print(len(list3))
     # 传入xr方法
     xr(list1,list2,list3)
@@ -190,6 +190,13 @@ def dataCl1(list1,list2):
                     break
     for i in range(0,len(list1)):
         list1[i].insert(0, i+1)
+    value = ''
+    for x in range(0, len(list1)):
+        # print(list1[x][2])
+        if list1[x][2] != value:
+            value = list1[x][2]
+        else:
+            list1[x][2] = ''
     return list1
 
 # list3数据处理

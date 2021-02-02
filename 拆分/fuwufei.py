@@ -5,6 +5,8 @@ import pandas as pd
 import xlrd
 from openpyxl import *
 import numpy as np
+from openpyxl.styles import Font, Alignment, PatternFill
+
 
 def getmonth():
     # 获取当前月份-1
@@ -238,12 +240,13 @@ def dataCl3(list3):
 # 新建模板并写入数据
 def xr(list1, list2,list3):
     global yue,wcnum
+    xiaowei = [1,3,4,6,8,17]
+    heji = [1,3,17]
     wb = load_workbook('D:\\fuwufei2\\清单模板.xlsx')
     ws = wb["清单"]
     ws1 = wb['活动奖项明细']
     a = '注：服务费发放说明：\n1、活动奖：全拓直接服务奖 + 分享有礼直接服务奖 + 翻倍服务奖（明细见附件2\n2、收入合计 = 个人销售奖 + 销售服务奖 + 活动奖 + 领导奖 + 卓越奖\n3、秒结入账：符合秒结规则的分享有礼直接服务奖和对应个人销售奖，已实时入账相应电子积分秒结账户，不再做月结入账\n4、月结入账 = 收入合计 - 秒结入账 - 保险代扣 - 其他扣除\n5、绿色代表收入，粉色代表支出。\n'
     n = 6  #清单sheet从哪行开始写
-
     #清单sheet写入数据
     for yiwei in range(0, len(list1)):
         if len(list1[yiwei]) >10:
@@ -256,17 +259,12 @@ def xr(list1, list2,list3):
                     ss += 1
             n +=1
         elif len(list1[yiwei]) == 6:
-            ws.cell(row=n, column=1).value = list1[yiwei][0]
-            ws.cell(row=n, column=3).value = list1[yiwei][1]
-            ws.cell(row=n, column=4).value = list1[yiwei][2]
-            ws.cell(row=n, column=6).value = list1[yiwei][3]
-            ws.cell(row=n, column=8).value = list1[yiwei][4]
-            ws.cell(row=n, column=17).value = list1[yiwei][5]
+            for xw in range(0,len(xiaowei)):
+                ws.cell(row=n, column=xiaowei[xw]).value = list1[yiwei][xw]
             n += 1
         elif len(list1[yiwei]) == 3:
-            ws.cell(row=n, column=1).value = list1[yiwei][0]
-            ws.cell(row=n, column=3).value = list1[yiwei][1]
-            ws.cell(row=n, column=17).value = list1[yiwei][2]
+            for hj in range(0,len(heji)):
+                ws.cell(row=n, column=heji[hj]).value = list1[yiwei][hj]
             n += 1
 
     ws['C3'] = list2[0]
@@ -274,10 +272,57 @@ def xr(list1, list2,list3):
     ws['M3'] = yue
     ws['Q3'] = list2[2]
     ws['T6'] = list2[6]
+
+    #注释文字样式
+    cs1 = 'A'+ str(n)
+    cs2 ='T' + str(n)
+    ws.merge_cells(cs1+':'+cs2) #合并单元格
+    ws.row_dimensions[n].height = 120 #设置行高
     ws.cell(row=n, column=1).value = a
+    ws.cell(row=n, column=1).font = Font(size=9, bold=True, name='微软雅黑') # 注释文字格式
+    ws.cell(row=n, column=1).alignment = Alignment(horizontal='left', vertical='center', wrap_text=True)
+
+    #清单sheet格式设置
+    font = Font(size=9, bold=False, name='微软雅黑')  # 普通文字格式
+    font1 = Font(size=9, bold=True, name='微软雅黑',color='336600') # 收入文字格式
+    fill1 = PatternFill(patternType="solid", start_color="eaf1dd")  # 收入底色
+    fill2 = PatternFill(patternType="solid", start_color="f2dddc")  # 扣除底色
+    fill3 = PatternFill(patternType="solid", start_color="dbe5f1")  # 合计底色
+
+    # 整体字体和居中,颜色填充,合并
+    for a1 in range(0,len(list1)):
+        ws.row_dimensions[a1+6].height = 24 #设置每行行高
+        if len(list1[a1]) == 6:
+            for xw in range(0, len(xiaowei)):
+                ws.cell(row=a1 + 6, column=xiaowei[xw]).font = font
+                ws.cell(row=a1 + 6, column=xiaowei[xw]).alignment = Alignment(horizontal='center', vertical='center')
+                cs1 = 'H' + str(a1 + 6)
+                cs2 = 'P' + str(a1 + 6)
+                ws.merge_cells(cs1 + ':' + cs2)  # 合并单元格
+        elif len(list1[a1]) == 3:
+            for hj in range(0, len(heji)):
+                ws.cell(row=a1 + 6, column=heji[hj]).font = font
+                ws.cell(row=a1 + 6, column=heji[hj]).alignment = Alignment(horizontal='center', vertical='center')
+                cs1 = 'C' + str(a1 + 6)
+                cs2 = 'P' + str(a1 + 6)
+                ws.merge_cells(cs1 + ':' + cs2)  # 合并单元格
+                if hj != 0:
+                    ws.cell(row=a1 + 6, column=heji[hj]).fill = fill3
+        else:
+            for i in range(0, len(list1[a1])):
+                ws.cell(row=a1 + 6, column=i + 1).font = font
+                ws.cell(row=a1+6, column=i+1).alignment = Alignment(horizontal='center', vertical='center')
+                if 7<=i<=11:
+                    ws.cell(row=a1 + 6, column=i + 1).fill = fill1
+                elif 13<=i<=15:
+                    ws.cell(row=a1 + 6, column=i + 1).fill = fill2
+
+    #收入和入账字体颜色
+    for a1 in range(0,len(list1)):
+        ws.cell(row=a1 + 6, column=13).font = font1
+        ws.cell(row=a1 + 6, column=17).font = font1
 
     #活动奖项明细sheet写入数据
-    ss1 = 3  # 活动奖项明细sheet从哪列开始写
     if len(list3) == 1:
         if len(list3[0]) != 0:
             for i in range(0, len(list3[0])-1):
@@ -292,6 +337,38 @@ def xr(list1, list2,list3):
             else:
                 ws1.cell(row=i + 3, column=2).value = list3[i][0]
                 ws1.cell(row=i + 3, column=8).value = list3[i][1]
+
+    # 活动奖项明细sheet格式设置
+    # 整体字体和居中,颜色填充,合并
+    if len(list3) == 1:
+        if len(list3[0]) != 0:
+            print(111)
+            for i in range(0, len(list3[0])-1):
+                ws1.cell(row=3, column=2).font = font
+                ws1.cell(row=3, column=i+3).alignment = Alignment(horizontal='center', vertical='center')
+    else:
+        for i in range(0, len(list3)):
+            ws1.row_dimensions[i+3].height = 24  # 设置每行行高
+            if len(list3[i]) >2:
+                for c in range(0, len(list3[i])-1):
+                    ws1.cell(row=i + 3, column=2).font = font
+                    ws1.cell(row=i + 3, column=c + 3).font = font
+                    ws1.cell(row=i + 3, column=2).alignment = Alignment(horizontal='center', vertical='center')
+                    ws1.cell(row=i + 3, column=c + 3).alignment = Alignment(horizontal='center', vertical='center')
+            else:
+                ws1.cell(row=i + 3, column=2).font = font
+                ws1.cell(row=i + 3, column=8).font = font
+                ws1.cell(row=i + 3, column=2).alignment= Alignment(horizontal='center', vertical='center')
+                ws1.cell(row=i + 3, column=8).alignment = Alignment(horizontal='center', vertical='center')
+                cs3 = 'B' + str(i + 3)
+                cs4 = 'G' + str(i + 3)
+                cs5 = 'H' + str(i + 3)
+                cs6 = 'I' + str(i + 3)
+                ws1.merge_cells(cs3 + ':' + cs4)  # 合并单元格
+                ws1.merge_cells(cs5 + ':' + cs6)
+                ws1.cell(row=i + 3, column=2).fill = fill3
+                ws1.cell(row=i + 3, column=8).fill = fill3
+
 
 
     file_name = dir_path + '\\'+ list2[0] + '.xlsx'

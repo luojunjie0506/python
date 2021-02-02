@@ -1,14 +1,10 @@
 # coding=gbk
-import copy
 import datetime
-import openpyxl
 import os
 import pandas as pd
 import xlrd
 from openpyxl import *
-from openpyxl.utils import get_column_letter
 import numpy as np
-
 
 def getmonth():
     # 获取当前月份-1
@@ -91,7 +87,6 @@ def xhs(dh):
                     list2.append(value_1)
                 b1 = a1 + 1
                 break
-
 
     for a2 in range(b2, row_list[2]+1):
         if a2 == row_list[2]:
@@ -203,8 +198,25 @@ def dataCl3(list3):
         list4 = np.array(list3)
         idex = np.lexsort([list4[:, 1], list4[:, 5]])
         list3 = list4[idex, :]
-        # for i in range(0, len(list3)):
-        #     list3[i].insert(0, i + 1)
+        list3 = list3.tolist()
+        sum = 0.0 #存每个人的合计
+        ss = [] #存第几行插入合计
+        for i in range(0, len(list3)):
+            if i == len(list4) - 1:
+                sum += float(list3[i][6])
+                ss.append([i + 1, sum])
+                break
+            elif list3[i][5] != list3[i + 1][5]:
+                sum += float(list3[i][6])
+                ss.append([i + 1, sum])
+                sum = 0.0
+            else:
+                sum += float(list3[i][6])
+        for y in range(0, len(ss)):
+            cc = ['合计：']
+            cc.append(ss[y][1])
+            # 因为循环了几次就插入了几行,行数变化所以加上y
+            list3.insert(ss[y][0] + y, cc)
         return list3
     else:
         return list3
@@ -218,7 +230,6 @@ def xr(list1, list2,list3):
     ws1 = wb['活动奖项明细']
     a = '注：服务费发放说明：\n1、活动奖：全拓直接服务奖 + 分享有礼直接服务奖 + 翻倍服务奖（明细见附件2\n2、收入合计 = 个人销售奖 + 销售服务奖 + 活动奖 + 领导奖 + 卓越奖\n3、秒结入账：符合秒结规则的分享有礼直接服务奖和对应个人销售奖，已实时入账相应电子积分秒结账户，不再做月结入账\n4、月结入账 = 收入合计 - 秒结入账 - 保险代扣 - 其他扣除\n5、绿色代表收入，粉色代表支出。\n'
     n = 6  #清单sheet从哪行开始写
-    n1 = 3 #活动奖项明细sheet从哪行开始写
 
     #清单sheet写入数据
     for yiwei in range(0, len(list1)):
@@ -269,24 +280,6 @@ def xr(list1, list2,list3):
                 ws1.cell(row=i + 3, column=2).value = list3[i][0]
                 ws1.cell(row=i + 3, column=8).value = list3[i][1]
 
-    # for yiwei in range(0, len(list3)):
-    #     if len(list3[yiwei]) > 2:
-    #         ss1 = 3  # 活动奖项明细sheet从哪列开始写
-    #         for i in range(0, len(list3[yiwei])):
-    #             if i == 0:
-    #                 continue
-    #             else:
-    #                 ws1.cell(row=n1, column=2).value = i+1
-    #                 ws1.cell(row=n1, column=ss1).value = list3[yiwei][i]
-    #                 ss1 += 1
-    #         n1 += 1
-    #     elif len(list3[yiwei]) ==1 :
-    #
-    #         break
-    #     else:
-    #         ws1.cell(row=n1, column=2).value = list1[yiwei][0]
-    #         ws1.cell(row=n1, column=8).value = list1[yiwei][1]
-    #         n1 += 1
 
     file_name = dir_path + '\\'+ list2[0] + '.xlsx'
     wb.save(file_name)

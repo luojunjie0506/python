@@ -5,7 +5,7 @@ import pandas as pd
 import xlrd
 from openpyxl import *
 import numpy as np
-from openpyxl.styles import Font, Alignment, PatternFill
+from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
 
 
 def getmonth():
@@ -201,6 +201,13 @@ def dataCl1(list1,list2):
             list1[x][2] = ''
     return list1
 
+# 设置超链接
+def link_1(cell, link, display=None):
+    cell.hyperlink = link
+    cell.font = Font(size=9, bold=True, name='微软雅黑',color='336600')
+    if display is not None:
+        cell.value = display
+
 # list3数据处理
 def dataCl3(list3):
     if len(list3) > 0:
@@ -239,12 +246,29 @@ def dataCl3(list3):
 
 # 新建模板并写入数据
 def xr(list1, list2,list3):
-    global yue,wcnum
+    global yue,wcnum,num1,num,v
     xiaowei = [1,3,4,6,8,17]
     heji = [1,3,17]
     wb = load_workbook('D:\\fuwufei2\\清单模板.xlsx')
     ws = wb["清单"]
     ws1 = wb['活动奖项明细']
+
+    #活动奖项明细sheet写入数据
+    if len(list3) == 1:
+        if len(list3[0]) != 0:
+            for i in range(0, len(list3[0])-1):
+                ws1.cell(row=3, column=2).value = i + 1
+                ws1.cell(row=3, column=i+3).value = list3[0][i+1]
+    else:
+        for i in range(0, len(list3)):
+            if len(list3[i]) >2:
+                for c in range(0, len(list3[i])-1):
+                    ws1.cell(row=i+3, column=2).value = i + 1
+                    ws1.cell(row=i+3, column=c+3).value = list3[i][c+1]
+            else:
+                ws1.cell(row=i + 3, column=2).value = list3[i][0]
+                ws1.cell(row=i + 3, column=8).value = list3[i][1]
+
     a = '注：服务费发放说明：\n1、活动奖：全拓直接服务奖 + 分享有礼直接服务奖 + 翻倍服务奖（明细见附件2\n2、收入合计 = 个人销售奖 + 销售服务奖 + 活动奖 + 领导奖 + 卓越奖\n3、秒结入账：符合秒结规则的分享有礼直接服务奖和对应个人销售奖，已实时入账相应电子积分秒结账户，不再做月结入账\n4、月结入账 = 收入合计 - 秒结入账 - 保险代扣 - 其他扣除\n5、绿色代表收入，粉色代表支出。\n'
     n = 6  #清单sheet从哪行开始写
     #清单sheet写入数据
@@ -254,15 +278,19 @@ def xr(list1, list2,list3):
             for i in range(0,len(list1[yiwei])):
                 if i==1:
                     continue
+                elif i ==11 and yiwei==0 and list1[0][2] == '店长':
+                    link_1(ws['J6'], '#活动奖项明细!A1', list1[yiwei][i])
                 else:
                     ws.cell(row=n, column=ss).value = list1[yiwei][i]
                     ss += 1
             n +=1
         elif len(list1[yiwei]) == 6:
+            ws.cell(row=n, column=2).value = ''
             for xw in range(0,len(xiaowei)):
                 ws.cell(row=n, column=xiaowei[xw]).value = list1[yiwei][xw]
             n += 1
         elif len(list1[yiwei]) == 3:
+            ws.cell(row=n, column=2).value = ''
             for hj in range(0,len(heji)):
                 ws.cell(row=n, column=heji[hj]).value = list1[yiwei][hj]
             n += 1
@@ -317,26 +345,37 @@ def xr(list1, list2,list3):
                 elif 13<=i<=15:
                     ws.cell(row=a1 + 6, column=i + 1).fill = fill2
 
+    # 清单表相同的合并
+    zhi = ''
+    num3 = 6
+    num4 = 0
+    for a1 in range(0, len(list1)+1):
+        if a1 == 0:
+            zhi = ws.cell(row=6, column=2).value
+        # 合并相同的单元格
+        if a1 > 0:
+            value = ws.cell(row=a1 + 6, column=2).value
+            if value != '':
+                zhi1 = value
+                num4 = a1 + 6
+                if num4 - num3 > 1:
+                    nb1 = 'B' + str(num3)
+                    nb2 = 'B' + str(num4 - 1)
+                    ws.merge_cells(nb1 + ':' + nb2)  # 合并单元格
+                    zhi = zhi1
+                    num3 = num4
+
     #收入和入账字体颜色
     for a1 in range(0,len(list1)):
         ws.cell(row=a1 + 6, column=13).font = font1
         ws.cell(row=a1 + 6, column=17).font = font1
 
-    #活动奖项明细sheet写入数据
-    if len(list3) == 1:
-        if len(list3[0]) != 0:
-            for i in range(0, len(list3[0])-1):
-                ws1.cell(row=3, column=2).value = i + 1
-                ws1.cell(row=3, column=i+3).value = list3[0][i+1]
-    else:
-        for i in range(0, len(list3)):
-            if len(list3[i]) >2:
-                for c in range(0, len(list3[i])-1):
-                    ws1.cell(row=i+3, column=2).value = i + 1
-                    ws1.cell(row=i+3, column=c+3).value = list3[i][c+1]
-            else:
-                ws1.cell(row=i + 3, column=2).value = list3[i][0]
-                ws1.cell(row=i + 3, column=8).value = list3[i][1]
+    # 清单边框
+    border = Border(top=Side(border_style='thin', color='000000'),bottom=Side(border_style='thin', color='000000'),left=Side(border_style='thin', color='000000'),right=Side(border_style='thin', color='000000'))
+    for x in range(0,len(list1)):
+        for y in range(0, 20):
+            ws.cell(row=x + 6, column=y+1).border = border
+
 
     # 活动奖项明细sheet格式设置
     # 整体字体和居中,颜色填充,合并
@@ -347,7 +386,22 @@ def xr(list1, list2,list3):
                 ws1.cell(row=3, column=2).font = font
                 ws1.cell(row=3, column=i+3).alignment = Alignment(horizontal='center', vertical='center')
     else:
+        v = 1
+        num1 = ''
+        num = ''
         for i in range(0, len(list3)):
+            # 合并相同的单元格
+            if list3[i][1] != '':
+                if v == 1:
+                    num = 'C' + str(i+3)
+                    v = 2
+                else:
+                    num1 = 'C' + str(i+2)
+                    v = 1
+                    if num != num1 :
+                        ws1.merge_cells(num + ':' + num1)
+                        num1 = ''
+                        num = ''
             ws1.row_dimensions[i+3].height = 24  # 设置每行行高
             if len(list3[i]) >2:
                 for c in range(0, len(list3[i])-1):
@@ -369,13 +423,17 @@ def xr(list1, list2,list3):
                 ws1.cell(row=i + 3, column=2).fill = fill3
                 ws1.cell(row=i + 3, column=8).fill = fill3
 
-
+    #活动奖项明细sheet边框
+    for x in range(0,len(list3)):
+        for y in range(0, 8):
+            ws1.cell(row=x + 3, column=y+2).border = border
 
     file_name = dir_path + '\\'+ list2[0] + '.xlsx'
     wb.save(file_name)
     wb.close()
     wcnum += 1
     print(wcnum)
+
 
 if __name__ == '__main__':
     b0 = 1

@@ -23,8 +23,8 @@ def getmonth():
 # 整合文件夹中的表到一个excel中
 def zhenghe():
     global sheets_list
-    path = 'D:\\fuwufei\\c\\' # 文件夹路径
-    save_path = 'D:\\fuwufei\\xx.xlsx'  # 合并后excel的存放路径
+    path = 'D:\\fuwufei2\\c\\' # 文件夹路径
+    save_path = 'D:\\fuwufei2\\xx.xlsx'  # 合并后excel的存放路径
     file_list = os.listdir(path)  # 获取文件夹中的所有文件名的列表
     writer = pd.ExcelWriter(save_path)  # 使用ExcelWriter函数，可以写入数据时不会覆盖sheet
     # 遍历文件夹中的所有文件名的列表
@@ -160,11 +160,13 @@ def dataCl1(list1,list2):
                     sss1 = ['电子积分个人账户入账合计']
                     nuM = float(list1[0][16]) + float(list2[5])
                     sss1.append(nuM)
+                    sss1.append(list1[0][17])
                     list1.insert(2, sss1)
                 else:
                     # list2中小薇店补为空,加一行合计
                     sss1 = ['电子积分个人账户入账合计']
                     sss1.append(list1[0][16])
+                    sss1.append(list1[0][17])
                     list1.insert(1, sss1)
             else:
                 if list2[5] != '':
@@ -248,7 +250,8 @@ def dataCl3(list3):
 def xr(list1, list2,list3):
     global yue,wcnum,num1,num,v
     xiaowei = [1,3,4,6,8,17]
-    heji = [1,3,17]
+    heji = [1,3,17,18]
+    heji1 = [1, 3, 17]
     wb = load_workbook('D:\\fuwufei2\\清单模板.xlsx')
     ws = wb["清单"]
     ws1 = wb['活动奖项明细']
@@ -290,10 +293,16 @@ def xr(list1, list2,list3):
             for xw in range(0,len(xiaowei)):
                 ws.cell(row=n, column=xiaowei[xw]).value = list1[yiwei][xw]
             n += 1
-        elif len(list1[yiwei]) == 3:
+        elif len(list1[yiwei]) == 4  :
             ws.cell(row=n, column=2).value = ''
             for hj in range(0,len(heji)):
                 ws.cell(row=n, column=heji[hj]).value = list1[yiwei][hj]
+            n += 1
+
+        elif  len(list1[yiwei]) == 3 :
+            ws.cell(row=n, column=2).value = ''
+            for hj1 in range(0,len(heji1)):
+                ws.cell(row=n, column=heji1[hj1]).value = list1[yiwei][hj1]
             n += 1
 
     ws['C3'] = list2[0]
@@ -328,7 +337,7 @@ def xr(list1, list2,list3):
                 cs1 = 'H' + str(a1 + 6)
                 cs2 = 'P' + str(a1 + 6)
                 ws.merge_cells(cs1 + ':' + cs2)  # 合并单元格
-        elif len(list1[a1]) == 3:
+        elif len(list1[a1]) == 4 :
             for hj in range(0, len(heji)):
                 ws.cell(row=a1 + 6, column=heji[hj]).font = font
                 ws.cell(row=a1 + 6, column=heji[hj]).alignment = Alignment(horizontal='center', vertical='center')
@@ -337,6 +346,15 @@ def xr(list1, list2,list3):
                 ws.merge_cells(cs1 + ':' + cs2)  # 合并单元格
                 if hj != 0:
                     ws.cell(row=a1 + 6, column=heji[hj]).fill = fill3
+        elif  len(list1[a1]) == 3:
+            for hj1 in range(0, len(heji1)):
+                ws.cell(row=a1 + 6, column=heji1[hj1]).font = font
+                ws.cell(row=a1 + 6, column=heji1[hj1]).alignment = Alignment(horizontal='center', vertical='center')
+                cs1 = 'C' + str(a1 + 6)
+                cs2 = 'P' + str(a1 + 6)
+                ws.merge_cells(cs1 + ':' + cs2)  # 合并单元格
+                if hj1 != 0:
+                    ws.cell(row=a1 + 6, column=heji1[hj1]).fill = fill3
         else:
             for i in range(0, len(list1[a1])):
                 ws.cell(row=a1 + 6, column=i + 1).font = font
@@ -446,8 +464,8 @@ if __name__ == '__main__':
     row_list = []  # 存放每个表的行数
     col_list = []  # 存放每个表的列数
     yue = getmonth()
-    # sheets_list = []  # 存放合并后的sheet名列表
-    sheets_list = ['202012 小微店补', '202012 服务费清单原始数据', '202012 活动明细表', '202012 补扣款备注', '202012 门店信息表']
+    sheets_list = []  # 存放合并后的sheet名列表
+    sheets_list=['202012 小微店补', '202012 服务费清单原始数据', '202012 活动明细表', '202012 补扣款备注', '202012 门店信息表']
     # zhenghe_path = zhenghe()
 
     #创建文件夹存放各店信息

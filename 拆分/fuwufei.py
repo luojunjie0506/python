@@ -280,6 +280,7 @@ def xr(list1, list2,list3):
                     continue
                 elif i ==11 and yiwei==0 and list1[0][2] == '店长':
                     link_1(ws['J6'], '#活动奖项明细!A1', list1[yiwei][i])
+                    ss += 1
                 else:
                     ws.cell(row=n, column=ss).value = list1[yiwei][i]
                     ss += 1

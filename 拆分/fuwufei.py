@@ -132,7 +132,7 @@ def xhs(dh):
     #数据处理
     list1  = dataCl1(list1,list2)
     list3 = dataCl3(list3)
-    # print(list1)
+    # print(list3)
     # print(len(list3))
     # 传入xr方法
     xr(list1,list2,list3)
@@ -190,6 +190,7 @@ def dataCl1(list1,list2):
                     sum += float(list1[yiwei][16])
                     sss1 = ['电子积分代发账户入账合计']
                     sss1.append(sum)
+                    sss1.append('代发账户')
                     list1.insert(yiwei + 1, sss1)
                     break
     for i in range(0,len(list1)):
@@ -395,7 +396,6 @@ def xr(list1, list2,list3):
         for y in range(0, 20):
             ws.cell(row=x + 6, column=y+1).border = border
 
-
     # 活动奖项明细sheet格式设置
     # 整体字体和居中,颜色填充,合并
     if len(list3) == 1:
@@ -405,22 +405,8 @@ def xr(list1, list2,list3):
                 ws1.cell(row=3, column=2).font = font
                 ws1.cell(row=3, column=i+3).alignment = Alignment(horizontal='center', vertical='center')
     else:
-        v = 1
-        num1 = ''
-        num = ''
+        v = 0
         for i in range(0, len(list3)):
-            # 合并相同的单元格
-            if list3[i][1] != '':
-                if v == 1:
-                    num = 'C' + str(i+3)
-                    v = 2
-                else:
-                    num1 = 'C' + str(i+2)
-                    v = 1
-                    if num != num1 :
-                        ws1.merge_cells(num + ':' + num1)
-                        num1 = ''
-                        num = ''
             ws1.row_dimensions[i+3].height = 24  # 设置每行行高
             if len(list3[i]) >2:
                 for c in range(0, len(list3[i])-1):
@@ -441,6 +427,27 @@ def xr(list1, list2,list3):
                 ws1.merge_cells(cs5 + ':' + cs6)
                 ws1.cell(row=i + 3, column=2).fill = fill3
                 ws1.cell(row=i + 3, column=8).fill = fill3
+            # 合并相同的单元格
+            if i == 0:
+                num = 'C3'
+            else:
+                if list3[i][1] != '':
+                    if len(list3[i]) < 5:
+                        num1 = 'C' + str(i + 2)
+                        num2 = 'C' + str(i + 4)
+                        ws1.merge_cells(num + ':' + num1)
+                        num = num2
+                        v = 1
+                    else:
+                        if v == 1:
+                            v = 0
+                            continue
+                        else:
+                            num1 = 'C' + str(i + 2)
+                            num2 = 'C' + str(i + 3)
+                            if num != num1:
+                                ws1.merge_cells(num + ':' + num1)
+                            num = num2
 
     #活动奖项明细sheet边框
     for x in range(0,len(list3)):
@@ -465,12 +472,12 @@ if __name__ == '__main__':
     col_list = []  # 存放每个表的列数
     yue = getmonth()
     sheets_list = []  # 存放合并后的sheet名列表
-    sheets_list=['202012 小微店补', '202012 服务费清单原始数据', '202012 活动明细表', '202012 补扣款备注', '202012 门店信息表']
-    # zhenghe_path = zhenghe()
+    # sheets_list=['202012 小微店补', '202012 服务费清单原始数据', '202012 活动明细表', '202012 补扣款备注', '202012 门店信息表']
+    zhenghe_path = zhenghe()
 
     #创建文件夹存放各店信息
     dir_path = 'D:\\fuwufei2\\' + getmonth() + '服务费清单'
-    # os.mkdir(dir_path)
+    os.mkdir(dir_path)
 
     data = xlrd.open_workbook("D:\\fuwufei2\\xx.xlsx")
     # 按顺序打开各个sheet表并获取行列

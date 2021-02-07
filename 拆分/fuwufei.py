@@ -36,11 +36,10 @@ def zhenghe():
         # 循环每个表中表头的第一个字段，并用来排序
         for btname in data:
             #判断表是否是服务费清单原始数据表，是的话就要表中第一个字段和顺序字段排列
-            # if '原始数据' in a:
-            #     df.sort_values(by=[btname, '顺序'], ascending=True, inplace=True)  # 使用第一个字段来升序。ascending排序，inplace替代
-            # else:
-            #     df.sort_values(by=btname, ascending=True, inplace=True)  # 使用第一个字段来升序。ascending排序，inplace替代
-            df.sort_values(by=btname, ascending=True, inplace=True)
+            if '原始数据' in a:
+                df.sort_values(by=[btname, '身份'], ascending=True, inplace=True)  # 使用第一个字段来升序。ascending排序，inplace替代
+            else:
+                df.sort_values(by=btname, ascending=True, inplace=True)  # 使用第一个字段来升序。ascending排序，inplace替代
             df.to_excel(writer, encoding='utf-8', sheet_name=a[:-5], index=None)  # 写入sheet中 index无索引
             writer.save()
             writer.close()
@@ -57,7 +56,6 @@ def xhs(dh):
     list1 = []  # 存储匹配服务费清单原始数据
     list2 = []  # 存储匹配补扣款备注,小微店补,门店信息表
     list3 = []  # 存储匹配活动明细表
-
     # 找到每个表的行数，如有存在行数就追加到list1,如不存在，在list1中加0后到后一个表匹配的行数
     # b参数是记录每次查询到的位置
     for a0 in range(b0, row_list[0]):
@@ -109,9 +107,10 @@ def xhs(dh):
         else:
             cell_3 = sheet3.cell(a3, 0).value
             if cell_3 == dh:
-                value_3 = sheet3.cell(a3, 1).value
+                value_3 = sheet3.cell(a3, 3).value
                 list2.append(value_3)
                 b3 = a3 + 1
+            else:
                 break
 
     for a4 in range(b4, row_list[4]):
@@ -132,8 +131,8 @@ def xhs(dh):
     #数据处理
     list1  = dataCl1(list1,list2)
     list3 = dataCl3(list3)
-    # print(list3)
-    # print(len(list3))
+    # print(list1)
+    # print(list2)
     # 传入xr方法
     xr(list1,list2,list3)
 
@@ -144,44 +143,54 @@ def dataCl1(list1,list2):
     list1.sort(key=take2)
     sum = 0
     for yiwei in range(0, len(list1)):
-        # 判断第一层
-        if yiwei == 0:
-            # 判断list1的第一行是否店长
-            if list1[yiwei][1] == '店长':
-                if list2[5] != '':
-                    # list2中小薇店补不为空,加一行小薇,一行合计
-                    sss = []
-                    sss.append(list2[0])
-                    sss.append(list2[1])
-                    sss.append(list2[4])
-                    sss.append('小微店补')
-                    sss.append(list2[5])
-                    list1.insert(1, sss)
-                    sss1 = ['电子积分个人账户入账合计']
-                    nuM = float(list1[0][16]) + float(list2[5])
-                    sss1.append(nuM)
-                    sss1.append(list1[0][17])
-                    list1.insert(2, sss1)
-                else:
-                    # list2中小薇店补为空,加一行合计
-                    sss1 = ['电子积分个人账户入账合计']
-                    sss1.append(list1[0][16])
-                    sss1.append(list1[0][17])
-                    list1.insert(1, sss1)
+        # 判断list1的第一行是否店长
+        if list1[yiwei][1] == '店长' and yiwei == 0:
+            if list2[5] != '':
+                # list2中小薇店补不为空,加一行小薇,一行合计
+                sss = []
+                sss.append(list2[0])
+                sss.append(list2[1])
+                sss.append(list2[5])
+                sss.append('小微店补')
+                sss.append(list2[4])
+                list1.insert(1, sss)
+                sss1 = ['电子积分个人账户入账合计']
+                nuM = float(list1[0][16]) + float(list2[5])
+                sss1.append(nuM)
+                sss1.append(list1[0][17])
+                list1.insert(2, sss1)
             else:
-                if list2[5] != '':
-                    sss = []
-                    sss.append(list2[0])
-                    sss.append(list2[1])
-                    sss.append(list2[4])
-                    sss.append(list2[5])
-                    list1.insert(0, sss)
-                    sss1 = ['电子积分个人账户入账合计']
-                    sss1.append(list2[5])
-                    list1.insert(1, sss1)
+                # list2中小薇店补为空,加一行合计
+                sss1 = ['电子积分个人账户入账合计']
+                sss1.append(list1[0][16])
+                sss1.append(list1[0][17])
+                list1.insert(1, sss1)
+        elif list1[yiwei][1] != '店长' and yiwei == 0:
+            if list2[5] != '':
+                sss = []
+                sss.append(list2[0])
+                sss.append(list2[1])
+                sss.append(list2[5])
+                sss.append(list2[4])
+                list1.insert(0, sss)
+                sss1 = ['电子积分个人账户入账合计']
+                sss1.append(list2[5])
+                list1.insert(1, sss1)
         else:
-            if list1[yiwei][1] == '门店代发＜200元':
+            if list1[yiwei][1] == '门店代发＜200':
                 if yiwei+1 == len(list1):
+                    sum += float(list1[yiwei][16])
+                    sss1 = ['电子积分代发账户入账合计']
+                    sss1.append(sum)
+                    sss1.append('代发账户')
+                    list1.insert(yiwei + 1, sss1)
+                    break
+                elif  yiwei+2 == len(list1):
+                    sum += float(list1[yiwei][16])
+                    sss1 = ['电子积分代发账户入账合计']
+                    sss1.append(sum)
+                    sss1.append('代发账户')
+                    list1.insert(yiwei + 2, sss1)
                     break
                 elif list1[yiwei][1] == list1[yiwei + 1][1]:
                     sum += float(list1[yiwei][16])
@@ -197,6 +206,8 @@ def dataCl1(list1,list2):
         list1[i].insert(0, i+1)
     value = ''
     for x in range(0, len(list1)):
+        if list1[x][2] == '门店经销商≥200元':
+            list1[x][2] = '门店经销商'
         # print(list1[x][2])
         if list1[x][2] != value:
             value = list1[x][2]
@@ -273,7 +284,7 @@ def xr(list1, list2,list3):
                 ws1.cell(row=i + 3, column=2).value = list3[i][0]
                 ws1.cell(row=i + 3, column=8).value = list3[i][1]
 
-    a = '注：服务费发放说明：\n1、活动奖：全拓直接服务奖 + 分享有礼直接服务奖 + 翻倍服务奖（明细见附件2\n2、收入合计 = 个人销售奖 + 销售服务奖 + 活动奖 + 领导奖 + 卓越奖\n3、秒结入账：符合秒结规则的分享有礼直接服务奖和对应个人销售奖，已实时入账相应电子积分秒结账户，不再做月结入账\n4、月结入账 = 收入合计 - 秒结入账 - 保险代扣 - 其他扣除\n5、绿色代表收入，粉色代表支出。\n'
+    a = '注：服务费发放说明：\n1、活动奖：全拓直接服务奖 + 分享有礼直接服务奖 + 翻倍服务奖（明细见附件2\n2、收入合计 = 个人销售奖 + 销售服务奖 + 活动奖 + 领导奖 + 卓越奖\n3、秒结入账：符合秒结规则的分享有礼直接服务奖和对应个人销售奖，已实时入账相应电子积分秒结账户，不再做月结入账\n4、月结入账 = 收入合计 - 秒结入账 - 保险代扣 - 其他扣除\n5、绿色代表收入，粉色代表支出。\n6、门店代发＜200元：这部分人员的，月结到账=截止5日的余额+月结金额'
     n = 6  #清单sheet从哪行开始写
     #清单sheet写入数据
     for yiwei in range(0, len(list1)):
@@ -282,7 +293,7 @@ def xr(list1, list2,list3):
             for i in range(0,len(list1[yiwei])):
                 if i==1:
                     continue
-                elif i ==11 and yiwei==0 and list1[0][2] == '店长':
+                elif i ==10 and yiwei==0 and list1[0][2] == '店长':
                     link_1(ws['J6'], '#活动奖项明细!A1', list1[yiwei][i])
                     ss += 1
                 else:
@@ -306,17 +317,27 @@ def xr(list1, list2,list3):
                 ws.cell(row=n, column=heji1[hj1]).value = list1[yiwei][hj1]
             n += 1
 
+     #扣款备注
+    for yiwei in range(6, len(list1)+6):
+        for uu in range(0, len(list2)):
+            if uu > 5 and list2[uu] != '' :
+                cardNo1 = ws.cell(row=yiwei, column=4).value
+                if str(cardNo1) in list2[uu] :
+                    ws.cell(row=yiwei , column=20).font = Font(size=6, bold=False, name='微软雅黑')
+                    ws.cell(row=yiwei , column=20).alignment = Alignment(wrap_text=True)
+                    ws.cell(row=yiwei, column=20).value = list2[uu]
+
     ws['C3'] = list2[0]
     ws['H3'] = list2[1]
     ws['M3'] = yue
     ws['Q3'] = list2[2]
-    ws['T6'] = list2[6]
+
 
     #注释文字样式
     cs1 = 'A'+ str(n)
     cs2 ='T' + str(n)
     ws.merge_cells(cs1+':'+cs2) #合并单元格
-    ws.row_dimensions[n].height = 120 #设置行高
+    ws.row_dimensions[n].height = 130 #设置行高
     ws.cell(row=n, column=1).value = a
     ws.cell(row=n, column=1).font = Font(size=9, bold=True, name='微软雅黑') # 注释文字格式
     ws.cell(row=n, column=1).alignment = Alignment(horizontal='left', vertical='center', wrap_text=True)
@@ -400,7 +421,6 @@ def xr(list1, list2,list3):
     # 整体字体和居中,颜色填充,合并
     if len(list3) == 1:
         if len(list3[0]) != 0:
-            print(111)
             for i in range(0, len(list3[0])-1):
                 ws1.cell(row=3, column=2).font = font
                 ws1.cell(row=3, column=i+3).alignment = Alignment(horizontal='center', vertical='center')
@@ -472,7 +492,7 @@ if __name__ == '__main__':
     col_list = []  # 存放每个表的列数
     yue = getmonth()
     sheets_list = []  # 存放合并后的sheet名列表
-    # sheets_list=['202012 小微店补', '202012 服务费清单原始数据', '202012 活动明细表', '202012 补扣款备注', '202012 门店信息表']
+    # sheets_list=['202101 小微店补', '202101 服务费清单原始数据', '202101 活动明细表', '202101 补扣款备注', '202101 门店信息表']
     zhenghe_path = zhenghe()
 
     #创建文件夹存放各店信息

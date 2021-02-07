@@ -317,15 +317,6 @@ def xr(list1, list2,list3):
                 ws.cell(row=n, column=heji1[hj1]).value = list1[yiwei][hj1]
             n += 1
 
-     #扣款备注
-    for yiwei in range(6, len(list1)+6):
-        for uu in range(0, len(list2)):
-            if uu > 5 and list2[uu] != '' :
-                cardNo1 = ws.cell(row=yiwei, column=4).value
-                if str(cardNo1) in list2[uu] :
-                    ws.cell(row=yiwei , column=20).font = Font(size=6, bold=False, name='微软雅黑')
-                    ws.cell(row=yiwei , column=20).alignment = Alignment(wrap_text=True)
-                    ws.cell(row=yiwei, column=20).value = list2[uu]
 
     ws['C3'] = list2[0]
     ws['H3'] = list2[1]
@@ -417,6 +408,19 @@ def xr(list1, list2,list3):
         for y in range(0, 20):
             ws.cell(row=x + 6, column=y+1).border = border
 
+     #扣款备注
+    for yiwei in range(6, len(list1)+6):
+        for uu in range(0, len(list2)):
+            if uu > 5 and list2[uu] != '' :
+                cardNo = str(list2[uu][0:7])
+                cardNo2 = str(list2[uu][0:8])
+                cardNo3 = str(list2[uu][0:17])
+                cardNo1 = str(ws.cell(row=yiwei, column=3).value)
+                if cardNo1 == cardNo or cardNo1 == cardNo2 or cardNo1 == cardNo3:
+                    ws.cell(row=yiwei, column=20).value = list2[uu]
+                    ws.cell(row=yiwei , column=20).font = Font(size=6, bold=False, name='微软雅黑')
+                    ws.cell(row=yiwei , column=20).alignment = Alignment(horizontal='center', vertical='center',wrap_text=True)
+
     # 活动奖项明细sheet格式设置
     # 整体字体和居中,颜色填充,合并
     if len(list3) == 1:
@@ -491,9 +495,9 @@ if __name__ == '__main__':
     row_list = []  # 存放每个表的行数
     col_list = []  # 存放每个表的列数
     yue = getmonth()
-    sheets_list = []  # 存放合并后的sheet名列表
-    # sheets_list=['202101 小微店补', '202101 服务费清单原始数据', '202101 活动明细表', '202101 补扣款备注', '202101 门店信息表']
-    zhenghe_path = zhenghe()
+    # sheets_list = []  # 存放合并后的sheet名列表
+    sheets_list=['202101 小微店补', '202101 服务费清单原始数据', '202101 活动明细表', '202101 补扣款备注', '202101 门店信息表']
+    # zhenghe_path = zhenghe()
 
     #创建文件夹存放各店信息
     dir_path = 'D:\\fuwufei2\\' + getmonth() + '服务费清单'

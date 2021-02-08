@@ -131,8 +131,9 @@ def xhs(dh):
     #数据处理
     list1  = dataCl1(list1,list2)
     list3 = dataCl3(list3)
-    # print(list1)
-    # print(list2)
+    # if list1[0][0] == 'DS053':
+    #     print(list1)
+    #     print(list2)
     # 传入xr方法
     xr(list1,list2,list3)
 
@@ -176,32 +177,38 @@ def dataCl1(list1,list2):
                 sss1 = ['电子积分个人账户入账合计']
                 sss1.append(list2[5])
                 list1.insert(1, sss1)
-        else:
-            if list1[yiwei][1] == '门店代发＜200':
-                if yiwei+1 == len(list1):
-                    sum += float(list1[yiwei][16])
-                    sss1 = ['电子积分代发账户入账合计']
-                    sss1.append(sum)
-                    sss1.append('代发账户')
-                    list1.insert(yiwei + 1, sss1)
-                    break
-                elif  yiwei+2 == len(list1):
-                    sum += float(list1[yiwei][16])
-                    sss1 = ['电子积分代发账户入账合计']
-                    sss1.append(sum)
-                    sss1.append('代发账户')
-                    list1.insert(yiwei + 2, sss1)
-                    break
-                elif list1[yiwei][1] == list1[yiwei + 1][1]:
-                    sum += float(list1[yiwei][16])
-                    continue
-                elif list1[yiwei][1] != list1[yiwei + 1][1]:
-                    sum += float(list1[yiwei][16])
-                    sss1 = ['电子积分代发账户入账合计']
-                    sss1.append(sum)
-                    sss1.append('代发账户')
-                    list1.insert(yiwei + 1, sss1)
-                    break
+        if list1[yiwei][1] == '门店代发＜200':
+            if yiwei + 1 == len(list1):
+                sum += float(list1[yiwei][16])
+                sss1 = ['电子积分代发账户入账合计']
+                sss1.append(sum)
+                sss1.append('代发账户')
+                list1.insert(yiwei + 1, sss1)
+                break
+            elif yiwei + 2 == len(list1):
+                sum += float(list1[yiwei][16])
+                sss1 = ['电子积分代发账户入账合计']
+                sss1.append(sum)
+                sss1.append('代发账户')
+                list1.insert(yiwei + 1, sss1)
+                break
+            elif yiwei + 3 == len(list1):
+                sum += float(list1[yiwei][16])
+                sss1 = ['电子积分代发账户入账合计']
+                sss1.append(sum)
+                sss1.append('代发账户')
+                list1.insert(yiwei + 1, sss1)
+                break
+            elif list1[yiwei][1] == list1[yiwei + 1][1]:
+                sum += float(list1[yiwei][16])
+            elif list1[yiwei][1] != list1[yiwei + 1][1]:
+                print(yiwei)
+                sum += float(list1[yiwei][16])
+                sss1 = ['电子积分代发账户入账合计']
+                sss1.append(sum)
+                sss1.append('代发账户')
+                list1.insert(yiwei + 1, sss1)
+                break
     for i in range(0,len(list1)):
         list1[i].insert(0, i+1)
     value = ''
@@ -501,7 +508,7 @@ if __name__ == '__main__':
 
     #创建文件夹存放各店信息
     dir_path = 'D:\\fuwufei2\\' + getmonth() + '服务费清单'
-    os.mkdir(dir_path)
+    # os.mkdir(dir_path)
 
     data = xlrd.open_workbook("D:\\fuwufei2\\xx.xlsx")
     # 按顺序打开各个sheet表并获取行列

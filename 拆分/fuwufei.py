@@ -177,38 +177,30 @@ def dataCl1(list1,list2):
                 sss1 = ['电子积分个人账户入账合计']
                 sss1.append(list2[5])
                 list1.insert(1, sss1)
-        if list1[yiwei][1] == '门店代发＜200':
-            if yiwei + 1 == len(list1):
-                sum += float(list1[yiwei][16])
+
+    for num in range(1, len(list1)):
+        zhi1 = list1[num - 1][1]
+        zhi2 = list1[num][1]
+        if zhi1 == '门店代发＜200':
+            if zhi1 != zhi2:
+                sum += float(list1[num - 1][16])
                 sss1 = ['电子积分代发账户入账合计']
                 sss1.append(sum)
                 sss1.append('代发账户')
-                list1.insert(yiwei + 1, sss1)
+                list1.insert(num, sss1)
                 break
-            elif yiwei + 2 == len(list1):
-                sum += float(list1[yiwei][16])
-                sss1 = ['电子积分代发账户入账合计']
-                sss1.append(sum)
-                sss1.append('代发账户')
-                list1.insert(yiwei + 1, sss1)
-                break
-            elif yiwei + 3 == len(list1):
-                sum += float(list1[yiwei][16])
-                sss1 = ['电子积分代发账户入账合计']
-                sss1.append(sum)
-                sss1.append('代发账户')
-                list1.insert(yiwei + 1, sss1)
-                break
-            elif list1[yiwei][1] == list1[yiwei + 1][1]:
-                sum += float(list1[yiwei][16])
-            elif list1[yiwei][1] != list1[yiwei + 1][1]:
-                print(yiwei)
-                sum += float(list1[yiwei][16])
-                sss1 = ['电子积分代发账户入账合计']
-                sss1.append(sum)
-                sss1.append('代发账户')
-                list1.insert(yiwei + 1, sss1)
-                break
+            elif zhi1 == zhi2:
+                if num == len(list1) - 1:
+                    sum += float(list1[num - 1][16])
+                    sum += float(list1[num][16])
+                    sss1 = ['电子积分代发账户入账合计']
+                    sss1.append(sum)
+                    sss1.append('代发账户')
+                    list1.insert(num + 1, sss1)
+                    break
+                else:
+                    sum += float(list1[num - 1][16])
+
     for i in range(0,len(list1)):
         list1[i].insert(0, i+1)
     value = ''
@@ -502,13 +494,13 @@ if __name__ == '__main__':
     row_list = []  # 存放每个表的行数
     col_list = []  # 存放每个表的列数
     yue = getmonth()
-    # sheets_list = []  # 存放合并后的sheet名列表
-    sheets_list=['202101 小微店补', '202101 服务费清单原始数据', '202101 活动明细表', '202101 补扣款备注', '202101 门店信息表']
-    # zhenghe_path = zhenghe()
+    sheets_list = []  # 存放合并后的sheet名列表
+    # sheets_list=['202101 小微店补', '202101 服务费清单原始数据', '202101 活动明细表', '202101 补扣款备注', '202101 门店信息表']
+    zhenghe_path = zhenghe()
 
     #创建文件夹存放各店信息
     dir_path = 'D:\\fuwufei2\\' + getmonth() + '服务费清单'
-    # os.mkdir(dir_path)
+    os.mkdir(dir_path)
 
     data = xlrd.open_workbook("D:\\fuwufei2\\xx.xlsx")
     # 按顺序打开各个sheet表并获取行列

@@ -505,6 +505,7 @@ def xr(list1, list2,list3,list4):
             ws2.cell(row=x + 3, column=y + 2).border = border
 
     file_name = dir_path + '\\'+ list2[0] + '.xlsx'
+    wb.active = 0  # 设置每次打开excel都是第一个sheet
     wb.save(file_name)
     wb.close()
     wcnum += 1

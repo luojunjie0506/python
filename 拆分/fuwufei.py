@@ -23,8 +23,8 @@ def getmonth():
 # 整合文件夹中的表到一个excel中
 def zhenghe():
     global sheets_list
-    path = 'D:\\fuwufei2\\c\\' # 文件夹路径
-    save_path = 'D:\\fuwufei2\\xx.xlsx'  # 合并后excel的存放路径
+    path = 'D:\\fuwufei3\\c\\' # 文件夹路径
+    save_path = 'D:\\fuwufei3\\xx.xlsx'  # 合并后excel的存放路径
     file_list = os.listdir(path)  # 获取文件夹中的所有文件名的列表
     writer = pd.ExcelWriter(save_path)  # 使用ExcelWriter函数，可以写入数据时不会覆盖sheet
     # 遍历文件夹中的所有文件名的列表
@@ -49,13 +49,13 @@ def zhenghe():
     return save_path
 
 def xhs(dh):
-    global b0, b1, b2, b3, b4
-    global sheet0, sheet1, sheet2, sheet3, sheet4
+    global b0, b1, b2, b3, b4,b5
+    global sheet0, sheet1, sheet2, sheet3, sheet4,sheet5
     global row_list, col_list
-    # '202012 服务费清单原始数据','202012 门店信息表', '202012 小微店补', '202012 补扣款备注',  '202012 活动明细表'
     list1 = []  # 存储匹配服务费清单原始数据
     list2 = []  # 存储匹配补扣款备注,小微店补,门店信息表
     list3 = []  # 存储匹配活动明细表
+    list4 = []  # 存储匹配业绩明细表
     # 找到每个表的行数，如有存在行数就追加到list1,如不存在，在list1中加0后到后一个表匹配的行数
     # b参数是记录每次查询到的位置
     for a0 in range(b0, row_list[0]):
@@ -128,14 +128,25 @@ def xhs(dh):
                 list3.append(mh1)
                 b4 = a4 + 1
 
+    for a5 in range(b5, row_list[5]):
+        mh2 = []
+        if a5 == row_list[5]:
+            print(1)
+            break
+        else:
+            cell_5 = sheet5.cell(a5, 0).value
+            if cell_5 == dh:
+                for index in range(0,col_list[5]):
+                    value_5 = sheet5.cell(a5, index).value
+                    mh2.append(value_5)
+                list4.append(mh2)
+                b5 = a5 + 1
+
     #数据处理
     list1  = dataCl1(list1,list2)
     list3 = dataCl3(list3)
-    # if list1[0][0] == 'DS053':
-    #     print(list1)
-    #     print(list2)
     # 传入xr方法
-    xr(list1,list2,list3)
+    xr(list1,list2,list3,list4)
 
 # list1中数据的处理
 def dataCl1(list1,list2):
@@ -181,7 +192,7 @@ def dataCl1(list1,list2):
     for num in range(1, len(list1)):
         zhi1 = list1[num - 1][1]
         zhi2 = list1[num][1]
-        if zhi1 == '门店代发＜200':
+        if zhi1 == '门店代发＜200元':
             if zhi1 != zhi2:
                 sum += float(list1[num - 1][16])
                 sss1 = ['电子积分代发账户入账合计']
@@ -258,14 +269,22 @@ def dataCl3(list3):
 
 
 # 新建模板并写入数据
-def xr(list1, list2,list3):
+def xr(list1, list2,list3,list4):
     global yue,wcnum,num1,num,v
     xiaowei = [1,3,4,6,8,17]
     heji = [1,3,17,18]
     heji1 = [1, 3, 17]
-    wb = load_workbook('D:\\fuwufei2\\清单模板.xlsx')
+    wb = load_workbook('D:\\fuwufei3\\清单模板.xlsx')
     ws = wb["清单"]
     ws1 = wb['活动奖项明细']
+    ws2 = wb['业绩明细']
+
+    # 业绩明细sheet写入数据
+    for cd1 in range(0,len(list4)):
+        for cd2 in range(0,len(list4[cd1])):
+            if cd2 > 0:
+                ws2.cell(row=cd1 + 3, column=2).value = cd1 +1
+                ws2.cell(row=cd1 + 3, column=cd2 + 2).value = list4[cd1][cd2]
 
     #活动奖项明细sheet写入数据
     if len(list3) == 1:
@@ -477,6 +496,14 @@ def xr(list1, list2,list3):
         for y in range(0, 8):
             ws1.cell(row=x + 3, column=y+2).border = border
 
+    # 业绩明细sheet写入数据
+    for x in range(0,len(list4)):
+        ws2.row_dimensions[x + 3].height = 20
+        for y in range(0,len(list4[cd1])):
+            ws2.cell(row=x + 3, column=y + 2).font = font
+            ws2.cell(row=x + 3, column=y + 2).alignment = Alignment(horizontal='center', vertical='center')
+            ws2.cell(row=x + 3, column=y + 2).border = border
+
     file_name = dir_path + '\\'+ list2[0] + '.xlsx'
     wb.save(file_name)
     wb.close()
@@ -490,19 +517,20 @@ if __name__ == '__main__':
     b2 = 1
     b3 = 1
     b4 = 1
+    b5 = 1
     wcnum = 0 #完成的数量
     row_list = []  # 存放每个表的行数
     col_list = []  # 存放每个表的列数
     yue = getmonth()
     sheets_list = []  # 存放合并后的sheet名列表
-    # sheets_list=['202101 小微店补', '202101 服务费清单原始数据', '202101 活动明细表', '202101 补扣款备注', '202101 门店信息表']
+    # sheets_list=['202103 业绩明细', '202103 小微店补', '202103 服务费清单原始数据', '202103 活动明细表', '202103 补扣款备注', '202103 门店信息表']
     zhenghe_path = zhenghe()
 
     #创建文件夹存放各店信息
-    dir_path = 'D:\\fuwufei2\\' + getmonth() + '服务费清单'
+    dir_path = 'D:\\fuwufei3\\' + getmonth() + '服务费清单'
     os.mkdir(dir_path)
 
-    data = xlrd.open_workbook("D:\\fuwufei2\\xx.xlsx")
+    data = xlrd.open_workbook("D:\\fuwufei3\\xx.xlsx")
     # 按顺序打开各个sheet表并获取行列
     for num in range(0, len(sheets_list)):
         for sheet_list in sheets_list:
@@ -540,6 +568,13 @@ if __name__ == '__main__':
                 cols4 = sheet4.ncols
                 row_list.append(rows4)
                 col_list.append(cols4)
+                break
+            elif ('业绩明细' in sheet_list) and num == 5:
+                sheet5 = data.sheet_by_name(sheet_list)
+                rows5 = sheet5.nrows
+                cols5 = sheet5.ncols
+                row_list.append(rows5)
+                col_list.append(cols5)
                 break
 
     print(row_list)

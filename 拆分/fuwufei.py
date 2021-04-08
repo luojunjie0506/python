@@ -285,6 +285,9 @@ def xr(list1, list2,list3,list4):
             if cd2 > 0:
                 ws2.cell(row=cd1 + 3, column=2).value = cd1 +1
                 ws2.cell(row=cd1 + 3, column=cd2 + 2).value = list4[cd1][cd2]
+    # 业绩明细sheet备注
+    ws2.cell(row=len(list4)+3,column=2).value = '注：业绩累计实时变动，仅供参考，请以系统为准！'
+
 
     #活动奖项明细sheet写入数据
     if len(list3) == 1:
@@ -496,13 +499,14 @@ def xr(list1, list2,list3,list4):
         for y in range(0, 8):
             ws1.cell(row=x + 3, column=y+2).border = border
 
-    # 业绩明细sheet写入数据
+    # 业绩明细sheet格式
     for x in range(0,len(list4)):
         ws2.row_dimensions[x + 3].height = 20
         for y in range(0,len(list4[cd1])):
             ws2.cell(row=x + 3, column=y + 2).font = font
             ws2.cell(row=x + 3, column=y + 2).alignment = Alignment(horizontal='center', vertical='center')
             ws2.cell(row=x + 3, column=y + 2).border = border
+    ws2.cell(row=len(list4) + 3, column=2).font = font
 
     file_name = dir_path + '\\'+ list2[0] + '.xlsx'
     wb.active = 0  # 设置每次打开excel都是第一个sheet

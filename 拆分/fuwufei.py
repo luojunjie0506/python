@@ -573,7 +573,7 @@ if __name__ == '__main__':
 
     #创建文件夹存放各店信息
     dir_path = 'D:\\fuwufei3\\' + getmonth() + '服务费清单'
-    # os.mkdir(dir_path)
+    os.mkdir(dir_path)
 
     data = xlrd.open_workbook("D:\\fuwufei3\\xx.xlsx")
     # 按顺序打开各个sheet表并获取行列

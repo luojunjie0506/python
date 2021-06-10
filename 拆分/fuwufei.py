@@ -131,7 +131,6 @@ def xhs(dh):
     for a5 in range(b5, row_list[5]):
         mh2 = []
         if a5 == row_list[5]:
-            print(1)
             break
         else:
             cell_5 = sheet5.cell(a5, 0).value
@@ -162,27 +161,28 @@ def dataCl1(list1,list2):
                 sss = []
                 sss.append(list2[0])
                 sss.append(list2[1])
-                sss.append(list2[5])
-                sss.append('小微店补')
+                sss.append(list2[3])
                 sss.append(list2[4])
+                sss.append('小微店补')
+                sss.append(list2[5])
                 list1.insert(1, sss)
                 sss1 = ['电子积分个人账户入账合计']
-                nuM = float(list1[0][16]) + float(list2[5])
+                nuM = float(list1[0][14]) + float(list2[5])
                 sss1.append(nuM)
-                sss1.append(list1[0][17])
+                sss1.append(list1[0][18])
                 list1.insert(2, sss1)
             else:
                 # list2中小薇店补为空,加一行合计
                 sss1 = ['电子积分个人账户入账合计']
-                sss1.append(list1[0][16])
-                sss1.append(list1[0][17])
+                sss1.append(list1[0][14])
+                sss1.append(list1[0][18])
                 list1.insert(1, sss1)
         elif list1[yiwei][1] != '店长' and yiwei == 0:
             if list2[5] != '':
                 sss = []
                 sss.append(list2[0])
                 sss.append(list2[1])
-                sss.append(list2[5])
+                sss.append(list2[3])
                 sss.append(list2[4])
                 list1.insert(0, sss)
                 sss1 = ['电子积分个人账户入账合计']
@@ -194,7 +194,7 @@ def dataCl1(list1,list2):
         zhi2 = list1[num][1]
         if zhi1 == '门店代发＜200元':
             if zhi1 != zhi2:
-                sum += float(list1[num - 1][16])
+                sum += float(list1[num - 1][17])
                 sss1 = ['电子积分代发账户入账合计']
                 sss1.append(sum)
                 sss1.append('代发账户')
@@ -202,15 +202,15 @@ def dataCl1(list1,list2):
                 break
             elif zhi1 == zhi2:
                 if num == len(list1) - 1:
-                    sum += float(list1[num - 1][16])
-                    sum += float(list1[num][16])
+                    sum += float(list1[num - 1][17])
+                    sum += float(list1[num][17])
                     sss1 = ['电子积分代发账户入账合计']
                     sss1.append(sum)
                     sss1.append('代发账户')
                     list1.insert(num + 1, sss1)
                     break
                 else:
-                    sum += float(list1[num - 1][16])
+                    sum += float(list1[num - 1][17])
 
     for i in range(0,len(list1)):
         list1[i].insert(0, i+1)
@@ -271,9 +271,12 @@ def dataCl3(list3):
 # 新建模板并写入数据
 def xr(list1, list2,list3,list4):
     global yue,wcnum,num1,num,v
-    xiaowei = [1,3,4,6,8,17]
-    heji = [1,3,17,18]
-    heji1 = [1, 3, 17]
+    xiaowei = [1,3,4,5,6,8,15]
+    xw_heji= [1,3,15,19]
+    heji = [1,3,18,19]
+    heji1 = [1, 3, 15]
+    df_row = 0
+    gr_row = 0
     wb = load_workbook('D:\\fuwufei3\\清单模板.xlsx')
     ws = wb["清单"]
     ws1 = wb['活动奖项明细']
@@ -305,7 +308,7 @@ def xr(list1, list2,list3,list4):
                 ws1.cell(row=i + 3, column=2).value = list3[i][0]
                 ws1.cell(row=i + 3, column=8).value = list3[i][1]
 
-    a = '注：服务费发放说明：\n1、活动奖：全拓直接服务奖 + 分享有礼直接服务奖 + 翻倍服务奖（明细见附件2\n2、收入合计 = 个人销售奖 + 销售服务奖 + 活动奖 + 领导奖 + 卓越奖\n3、秒结入账：符合秒结规则的分享有礼直接服务奖和对应个人销售奖，已实时入账相应电子积分秒结账户，不再做月结入账\n4、月结入账 = 收入合计 - 秒结入账 - 保险代扣 - 其他扣除\n5、绿色代表收入，粉色代表支出。\n6、门店代发＜200元：这部分人员的，月结到账=截止5日的余额+月结金额'
+    a = '注：服务费发放说明：\n1、本月总收入 = 个人销售奖 + 销售服务奖 + 活动奖 + 领导奖 + 卓越奖（绿色标注：收入构成）\n2、本月总收入=秒结入账+月结入账（紫色标注：发放途径）\n3、活动奖：全拓直接服务奖 + 分享有礼直接服务奖 + 翻倍服务奖（明细详见附件2）\n4、秒结入账：符合秒结规则的分享有礼直接服务奖和对应个人销售奖，已实时入账相应电子积分秒结账户，不再做月结入账\n5、绿色标注代表收入构成；紫色标注代表总收入和发放途径；粉色标注代表本月支出\n6、电子积分账户余额受时时订货、转账等因素影响，请以系统为准，可查阅账户流水'
     n = 6  #清单sheet从哪行开始写
     #清单sheet写入数据
     for yiwei in range(0, len(list1)):
@@ -321,15 +324,21 @@ def xr(list1, list2,list3,list4):
                     ws.cell(row=n, column=ss).value = list1[yiwei][i]
                     ss += 1
             n +=1
-        elif len(list1[yiwei]) == 6:
+        elif len(list1[yiwei]) == 7:
             ws.cell(row=n, column=2).value = ''
             for xw in range(0,len(xiaowei)):
                 ws.cell(row=n, column=xiaowei[xw]).value = list1[yiwei][xw]
             n += 1
         elif len(list1[yiwei]) == 4  :
             ws.cell(row=n, column=2).value = ''
-            for hj in range(0,len(heji)):
-                ws.cell(row=n, column=heji[hj]).value = list1[yiwei][hj]
+            if list1[yiwei][1] == '电子积分个人账户入账合计':
+                paixu = xw_heji
+                gr_row = yiwei
+            else:
+                paixu = heji
+                df_row = yiwei
+            for hj in range(0, len(paixu)):
+                ws.cell(row=n, column=paixu[hj]).value = list1[yiwei][hj]
             n += 1
 
         elif  len(list1[yiwei]) == 3 :
@@ -347,7 +356,7 @@ def xr(list1, list2,list3,list4):
 
     #注释文字样式
     cs1 = 'A'+ str(n)
-    cs2 ='T' + str(n)
+    cs2 ='U' + str(n)
     ws.merge_cells(cs1+':'+cs2) #合并单元格
     ws.row_dimensions[n].height = 130 #设置行高
     ws.cell(row=n, column=1).value = a
@@ -357,35 +366,56 @@ def xr(list1, list2,list3,list4):
     #清单sheet格式设置
     font = Font(size=9, bold=False, name='微软雅黑')  # 普通文字格式
     font1 = Font(size=9, bold=True, name='微软雅黑',color='336600') # 收入文字格式
+    font2 = Font(size=9, bold=True, name='微软雅黑', color='0000cc')  # 代发收入文字格式
     fill1 = PatternFill(patternType="solid", start_color="eaf1dd")  # 收入底色
     fill2 = PatternFill(patternType="solid", start_color="f2dddc")  # 扣除底色
     fill3 = PatternFill(patternType="solid", start_color="dbe5f1")  # 合计底色
+    fill4 = PatternFill(patternType="solid", start_color="e5e0ec")  # 入账底色 浅紫
+    fill5 = PatternFill(patternType="solid", start_color="ccc0da")  # 入账底色 深紫
 
     # 整体字体和居中,颜色填充,合并
     for a1 in range(0,len(list1)):
         ws.row_dimensions[a1+6].height = 24 #设置每行行高
-        if len(list1[a1]) == 6:
+        if len(list1[a1]) == 7:
             for xw in range(0, len(xiaowei)):
                 ws.cell(row=a1 + 6, column=xiaowei[xw]).font = font
                 ws.cell(row=a1 + 6, column=xiaowei[xw]).alignment = Alignment(horizontal='center', vertical='center')
                 cs1 = 'H' + str(a1 + 6)
-                cs2 = 'P' + str(a1 + 6)
+                cs2 = 'N' + str(a1 + 6)
+                cs3 = 'P' + str(a1 + 6)
+                cs4 = 'R' + str(a1 + 6)
                 ws.merge_cells(cs1 + ':' + cs2)  # 合并单元格
+                ws.merge_cells(cs3 + ':' + cs4)  # 合并单元格
         elif len(list1[a1]) == 4 :
-            for hj in range(0, len(heji)):
-                ws.cell(row=a1 + 6, column=heji[hj]).font = font
-                ws.cell(row=a1 + 6, column=heji[hj]).alignment = Alignment(horizontal='center', vertical='center')
-                cs1 = 'C' + str(a1 + 6)
-                cs2 = 'P' + str(a1 + 6)
-                ws.merge_cells(cs1 + ':' + cs2)  # 合并单元格
+            if list1[a1][1] == '电子积分个人账户入账合计':
+                paixu = xw_heji
+            else:
+                paixu = heji
+            for hj in range(0, len(paixu)):
+                ws.cell(row=a1 + 6, column=paixu[hj]).font = font
+                ws.cell(row=a1 + 6, column=paixu[hj]).alignment = Alignment(horizontal='center', vertical='center')
+                if list1[a1][1] == '电子积分个人账户入账合计':
+                    cs1 = 'C' + str(a1 + 6)
+                    cs2 = 'N' + str(a1 + 6)
+                    cs3 = 'P' + str(a1 + 6)
+                    cs4 = 'R' + str(a1 + 6)
+                    ws.merge_cells(cs1 + ':' + cs2)  # 合并单元格
+                    ws.merge_cells(cs3 + ':' + cs4)  # 合并单元格
+                    for ccc in range(0,a1+1):
+                        ws.cell(row=ccc + 6, column=15).fill = fill5
+                    ws.cell(row=a1 + 6, column=16).fill = fill3
+                else:
+                    cs1 = 'C' + str(a1 + 6)
+                    cs2 = 'Q' + str(a1 + 6)
+                    ws.merge_cells(cs1 + ':' + cs2)  # 合并单元格
                 if hj != 0:
-                    ws.cell(row=a1 + 6, column=heji[hj]).fill = fill3
+                    ws.cell(row=a1 + 6, column=paixu[hj]).fill = fill3
         elif  len(list1[a1]) == 3:
             for hj1 in range(0, len(heji1)):
                 ws.cell(row=a1 + 6, column=heji1[hj1]).font = font
                 ws.cell(row=a1 + 6, column=heji1[hj1]).alignment = Alignment(horizontal='center', vertical='center')
                 cs1 = 'C' + str(a1 + 6)
-                cs2 = 'P' + str(a1 + 6)
+                cs2 = 'Q' + str(a1 + 6)
                 ws.merge_cells(cs1 + ':' + cs2)  # 合并单元格
                 if hj1 != 0:
                     ws.cell(row=a1 + 6, column=heji1[hj1]).fill = fill3
@@ -395,8 +425,13 @@ def xr(list1, list2,list3,list4):
                 ws.cell(row=a1+6, column=i+1).alignment = Alignment(horizontal='center', vertical='center')
                 if 7<=i<=11:
                     ws.cell(row=a1 + 6, column=i + 1).fill = fill1
-                elif 13<=i<=15:
+                elif 12<=i<=14:
+                    ws.cell(row=a1 + 6, column=i + 1).fill = fill4
+                elif 15<=i<=17:
                     ws.cell(row=a1 + 6, column=i + 1).fill = fill2
+
+        if a1 > (df_row):
+            ws.cell(row=a1 + 6, column=15).fill = fill5
 
     # 清单表相同的合并
     zhi = ''
@@ -418,15 +453,20 @@ def xr(list1, list2,list3,list4):
                     zhi = zhi1
                     num3 = num4
 
+    tc = [13,14,15,18]
     #收入和入账字体颜色
     for a1 in range(0,len(list1)):
-        ws.cell(row=a1 + 6, column=13).font = font1
-        ws.cell(row=a1 + 6, column=17).font = font1
+        for a2 in range(len(tc)):
+            ws.cell(row=a1 + 6, column=tc[a2]).font = font1
+    ws.cell(row=df_row+6, column=18).font = font2
+    if df_row !=0:
+        for nb in range(gr_row,df_row+1):
+            ws.cell(row=nb + 6, column=18).fill = fill5
 
     # 清单边框
     border = Border(top=Side(border_style='thin', color='000000'),bottom=Side(border_style='thin', color='000000'),left=Side(border_style='thin', color='000000'),right=Side(border_style='thin', color='000000'))
     for x in range(0,len(list1)):
-        for y in range(0, 20):
+        for y in range(0, 21):
             ws.cell(row=x + 6, column=y+1).border = border
 
      #扣款备注
@@ -528,12 +568,12 @@ if __name__ == '__main__':
     col_list = []  # 存放每个表的列数
     yue = getmonth()
     sheets_list = []  # 存放合并后的sheet名列表
-    # sheets_list=['202103 业绩明细', '202103 小微店补', '202103 服务费清单原始数据', '202103 活动明细表', '202103 补扣款备注', '202103 门店信息表']
+    # sheets_list=['202105 业绩明细', '202105 小微店补', '202105 服务费清单原始数据', '202105 活动明细表', '202105 补扣款备注', '202105 门店信息表']
     zhenghe_path = zhenghe()
 
     #创建文件夹存放各店信息
     dir_path = 'D:\\fuwufei3\\' + getmonth() + '服务费清单'
-    os.mkdir(dir_path)
+    # os.mkdir(dir_path)
 
     data = xlrd.open_workbook("D:\\fuwufei3\\xx.xlsx")
     # 按顺序打开各个sheet表并获取行列

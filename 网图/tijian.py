@@ -1,5 +1,5 @@
 # 整合文件夹中的表到一个excel中
-
+import os
 from openpyxl import load_workbook
 from openpyxl import Workbook
 from openpyxl.styles import Font
@@ -74,16 +74,18 @@ def cx(a,qq):
                     mySheet[lh].border = Border(right=Side(style='hair', color="000000"),bottom=Side(style='hair', color="000000"))
 
 
-
-    path = 'D:/表格/'+ str(qq) +'/'+ str(a)  + '.xlsx'
+    path = dir_path+'/' + str(qq) +'/'+ str(a)  + '.xlsx'
     wb.save(path) #保存每类的excel
 
 
 
 if __name__ == '__main__':
     # cc = input('请输入要按那列拆分：')
-    dd = '5.13-5.16荣格云健康检测报告名单及门店情况_20210517.xlsx'
+    dd = '7.03-7.05荣格云健康检测报告名单及门店情况（山西阳泉 孟县）_20210706.xlsx'
     # ['所属执委', '所属咨委', 骨干']
+    #创建文件夹存放各店信息
+    dir_path ='D:/表格/' + dd[:-5]
+    os.mkdir(dir_path)
     #打开Excel
     file = 'D:/'+dd
     data = load_workbook(file)
@@ -94,9 +96,13 @@ if __name__ == '__main__':
     #获取列
     column = sheet.max_column
 
+
     #存储列宽
     lk = []
     aa_list = [ '开设店', '骨干']
+    for i in aa_list:
+        dir_path1 = dir_path + '/' + i
+        os.mkdir(dir_path1)
 
     for cc in aa_list:
         # 存储列的值
